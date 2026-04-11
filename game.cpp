@@ -16,6 +16,8 @@
 #include "texture.h"
 #include "animation.h"
 
+#include "debug_memoryleak.h"
+
 static int Textures[2] = {};
 static AnimPattern* g_panim{ nullptr };
 static AnimPlayer* g_panimpliyer{ nullptr };
@@ -45,7 +47,7 @@ void Game_Update(double elapsed_time)
 
 void Game_Draw()
 {
-	Sprite_Draw({ 0.0f, 0.0f }, { 1600.0f, 900.0f }, Textures[0]);
+	Sprite_Draw({ 0.0f, 0.0f }, { 1920.0f, 1080.0f }, Textures[0]);
 	Sprite_DrawUV({ 64.0f, 64.0f }, { 140.0f, 200.0f }, { 0, 0 }, { 5, 2 }, Textures[1]);
 	g_panimpliyer->Draw({ 500.0f, 500.0f }, { 140.0f, 200.0f });
 }

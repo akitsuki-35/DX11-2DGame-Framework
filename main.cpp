@@ -14,6 +14,9 @@
 #include <sstream>
 #include <Xinput.h>
 
+// メモリリーク検出用
+#include "debug_memoryleak.h"
+
 // システム関連インクルード
 #include "direct3d.h"
 #include "system_timer.h"
@@ -41,11 +44,12 @@
 static constexpr char WINDOW_CLASS[]{ "GameWindow" }; //メインウィンドウクラス名
 static constexpr char TITLE[]{ "Game Window" }; //タイトルバーのテキスト
 
+
 /*----------------------------------------------------------------------------------------------------------
 	ウィンドウサイズ定義
 ----------------------------------------------------------------------------------------------------------*/
-static constexpr int SCREEN_WIDTH{ 1600 };
-static constexpr int SCREEN_HEIGHT{ 900 };
+static constexpr int SCREEN_WIDTH{ 1920 };
+static constexpr int SCREEN_HEIGHT{ 1080 };
 
 /*----------------------------------------------------------------------------------------------------------
 	ウィンドウプロシージャ プロトタイプ宣言
@@ -57,7 +61,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 ----------------------------------------------------------------------------------------------------------*/
 int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstance*/, _In_ LPSTR /*lpCmdLine*/, _In_ int nCmdShow)
 {
-	_CrtDumpMemoryLeaks();
+	// メモリリーク検出有効化
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+
 	(void)CoInitializeEx(nullptr, COINITBASE_MULTITHREADED);
 	SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
 
@@ -99,6 +105,9 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 
 	//メインウィンドウの作成
 	HWND hWnd = CreateWindow(WINDOW_CLASS, TITLE, window_style, window_x, window_y, window_width, window_height, nullptr, nullptr, hInstance, nullptr);
+
+	//SetWindowLong(hWnd, GWL_STYLE, WS_POPUP | WS_BORDER);
+	//SetWindowPos(hWnd, NULL, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
 
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
@@ -207,7 +216,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 		}
 
 	} while (msg.message != WM_QUIT);
-	
+
 	Scene_Finalize();
 	Fade_Finalize();
 	Sprite_Finalize();
@@ -256,7 +265,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
 
 	case WM_CLOSE: // ウィンドウ終了確認
-		if (MessageBox(hWnd, "本当に終了してよろしいですか？", "アプリケーションの終了", MB_OKCANCEL | MB_DEFBUTTON2) == IDOK)
+		if (MessageBox(hWnd, "アプリケーションを終了しますか？", "アプリケーションの終了", MB_OKCANCEL | MB_DEFBUTTON2) == IDOK)
 		{
 			DestroyWindow(hWnd);
 		}
