@@ -10,6 +10,7 @@
 #include <SDKDDKVer.h>
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+//#include <winuser.h>
 #include <algorithm>
 #include <sstream>
 #include <Xinput.h>
@@ -83,10 +84,10 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 	RegisterClassEx(&wcex);
 
 	// クライアント領域のサイズを持った短形（left,top,right,bottom）
-	RECT window_rect = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
+	RECT window_rect = { 0, 0, 1280, 720 };
 
 	// ウィンドウのスタイル
-	DWORD window_style = WS_OVERLAPPEDWINDOW & ~(WS_THICKFRAME | WS_MAXIMIZEBOX);
+	DWORD window_style = WS_OVERLAPPEDWINDOW ^ (WS_THICKFRAME | WS_MAXIMIZEBOX);
 
 	// 指定したクライアント領域を確保するために新たな短形座標を計算
 	AdjustWindowRect(&window_rect, window_style, FALSE);
@@ -103,12 +104,13 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 	int window_x = std::max((desktop_width - window_width) / 2, 0);
 	int window_y = std::max((desktop_height - window_height) / 2, 0);
 
-	//メインウィンドウの作成
-	HWND hWnd = CreateWindow(WINDOW_CLASS, TITLE, window_style, window_x, window_y, window_width, window_height, nullptr, nullptr, hInstance, nullptr);
+	// メインウィンドウの作成
+	HWND hWnd = CreateWindow(WINDOW_CLASS, TITLE, window_style,
+		window_x, window_y, window_width, window_height, nullptr, nullptr, hInstance, nullptr);
 
-	//SetWindowLong(hWnd, GWL_STYLE, WS_POPUP | WS_BORDER);
-	//SetWindowPos(hWnd, NULL, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
-
+	// タイトルバーと枠を削除
+	SetWindowLongPtr(hWnd, GWL_STYLE, window_style &= ~(WS_CAPTION | WS_THICKFRAME));
+	
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
 

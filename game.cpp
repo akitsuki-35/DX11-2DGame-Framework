@@ -47,7 +47,7 @@ void Game_Update(double elapsed_time)
 
 void Game_Draw()
 {
-	Sprite_Draw({ 0.0f, 0.0f }, { 1920.0f, 1080.0f }, Textures[0]);
+	Sprite_Draw({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, Textures[0]);
 	Sprite_DrawUV({ 64.0f, 64.0f }, { 140.0f, 200.0f }, { 0, 0 }, { 5, 2 }, Textures[1]);
 	g_panimpliyer->Draw({ 500.0f, 500.0f }, { 140.0f, 200.0f });
 }
