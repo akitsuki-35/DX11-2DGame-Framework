@@ -1,13 +1,13 @@
 /*＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 *
-*	キーボード入力[key_logger.cpp]
+*	キーボード入力[keylogger.cpp]
 *
 * 　作成者 : Asuka Kuroda
 * 　作成日 : 2025/6/27
 * ----------------------------------------------------------------------------------------------------------
 *
 ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝*/
-#include "key_logger.h"
+#include "keylogger.h"
 
 static Keyboard_State g_PtevState = {};
 static Keyboard_State g_TriggerState = {};

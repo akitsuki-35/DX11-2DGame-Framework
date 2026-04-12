@@ -16,6 +16,7 @@
 
 // システム関連インクルード
 #include "direct3d.h"
+#include "main.h"
 #include "system_timer.h"
 #include "audio.h"
 #include "shader2D.h"
@@ -27,11 +28,12 @@
 #include "texture.h"
 
 // 外部入力関連インクルード
-#include "key_logger.h"
+#include "keylogger.h"
 #include "mouse.h"
 
 // デバッグ関連インクルード
 #include "debug_text.h"
+#include "debug_memoryleak.h"
 
 // コントローラ用ライブラリ
 #pragma comment(lib, "xinput.lib")
@@ -42,13 +44,7 @@ static constexpr char WINDOW_CLASS[]{ "GameWindow" }; //メインウィンドウクラス名
 static constexpr char TITLE[]{ "Game Window" }; //タイトルバーのテキスト
 
 /*----------------------------------------------------------------------------------------------------------
-	ウィンドウサイズ定義
-----------------------------------------------------------------------------------------------------------*/
-static constexpr int SCREEN_WIDTH{ 1600 };
-static constexpr int SCREEN_HEIGHT{ 900 };
-
-/*----------------------------------------------------------------------------------------------------------
-	ウィンドウプロシージャ プロトタイプ宣言
+	プロトタイプ宣言
 ----------------------------------------------------------------------------------------------------------*/
 LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -57,7 +53,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 ----------------------------------------------------------------------------------------------------------*/
 int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstance*/, _In_ LPSTR /*lpCmdLine*/, _In_ int nCmdShow)
 {
-	_CrtDumpMemoryLeaks();
+	// メモリリーク検出有効化
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+
 	(void)CoInitializeEx(nullptr, COINITBASE_MULTITHREADED);
 	SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
 
@@ -80,7 +78,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 	RECT window_rect = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 
 	// ウィンドウのスタイル
-	DWORD window_style = WS_OVERLAPPEDWINDOW & ~(WS_THICKFRAME | WS_MAXIMIZEBOX);
+	DWORD window_style = WS_OVERLAPPEDWINDOW ^ (WS_THICKFRAME | WS_MAXIMIZEBOX);
 
 	// 指定したクライアント領域を確保するために新たな短形座標を計算
 	AdjustWindowRect(&window_rect, window_style, FALSE);
@@ -97,9 +95,13 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 	int window_x = std::max((desktop_width - window_width) / 2, 0);
 	int window_y = std::max((desktop_height - window_height) / 2, 0);
 
-	//メインウィンドウの作成
-	HWND hWnd = CreateWindow(WINDOW_CLASS, TITLE, window_style, window_x, window_y, window_width, window_height, nullptr, nullptr, hInstance, nullptr);
+	// メインウィンドウの作成
+	HWND hWnd = CreateWindow(WINDOW_CLASS, TITLE, window_style,
+		window_x, window_y, window_width, window_height, nullptr, nullptr, hInstance, nullptr);
 
+	// タイトルバーと枠を削除
+	SetWindowLongPtr(hWnd, GWL_STYLE, window_style &= ~(WS_CAPTION | WS_THICKFRAME));
+	
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
 
@@ -132,9 +134,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 		0.0f, 0.0f, 0, 0, 0.0f, 0.0f);
 
 	Fade_Initialize();
-
 	Fade_Start(0.0f, false);
-
 	Scene_Initialize();
 
 	//時間計測用
@@ -207,7 +207,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 		}
 
 	} while (msg.message != WM_QUIT);
-	
+
 	Scene_Finalize();
 	Fade_Finalize();
 	Sprite_Finalize();
@@ -242,7 +242,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_XBUTTONDOWN:
 	case WM_XBUTTONUP:
 	case WM_MOUSEHOVER:
-		//Mouse_ProcessMessage(message, wParam, lParam);
+		Mouse_ProcessMessage(message, wParam, lParam);
 		break;
     case WM_KEYDOWN:
 		if (wParam == VK_ESCAPE)
@@ -256,7 +256,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
 
 	case WM_CLOSE: // ウィンドウ終了確認
-		if (MessageBox(hWnd, "本当に終了してよろしいですか？", "アプリケーションの終了", MB_OKCANCEL | MB_DEFBUTTON2) == IDOK)
+		if (MessageBox(hWnd, "アプリケーションを終了しますか？", "アプリケーションの終了", MB_YESNO | MB_DEFBUTTON2 | MB_ICONEXCLAMATION) == IDYES)
 		{
 			DestroyWindow(hWnd);
 		}

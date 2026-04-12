@@ -22,5 +22,4 @@ void Sprite_Draw(float x, float y, float w, float h, float angle, int tx, int ty
 void Sprite_Draw(DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size, int texid, const DirectX::XMFLOAT4 color = { 1.0f,1.0f,1.0f,1.0f });
 void Sprite_DrawUV(DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size, DirectX::XMUINT2 uv_offset, DirectX::XMUINT2 uvpattern, int texid, const DirectX::XMFLOAT4 color = { 1.0f,1.0f,1.0f,1.0f });
 
-
 #endif // SPRITE_H

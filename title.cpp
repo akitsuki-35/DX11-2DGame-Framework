@@ -9,7 +9,7 @@
 */
 #include "title.h"
 #include "scene.h"
-#include "key_logger.h"
+#include "keylogger.h"
 #include "texture.h"
 #include "sprite.h"
 #include "fade.h"
