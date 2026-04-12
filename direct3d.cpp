@@ -1,6 +1,12 @@
-#include <Windows.h>
-
-#include <d3d11.h>
+/*
+*
+*	DirectX‰Šú‰»[direct3d.cpp]
+*
+* @Author  : Asuka Kuroda
+* @Date	: 2026/04/12
+* ----------------------------------------------------------------------------------------------------------
+*
+*/
 #include "direct3d.h"
 #include "debug_ostream.h"
 
@@ -111,7 +117,7 @@ void Direct3D_Finalize()
 
 void Direct3D_Clear()
 {
-	float clear_color[4] = { 0.6f,0.8f,0.4f,1.0f };
+	float clear_color[4] = { 0.0f,0.0f,0.3f,1.0f };
 
 	g_pDeviceContext->ClearRenderTargetView(g_pRenderTargetView, clear_color);
 	g_pDeviceContext->ClearDepthStencilView(g_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
@@ -144,6 +150,11 @@ ID3D11Device* Direct3D_GetDevice()
 ID3D11DeviceContext* Direct3D_GetDeviceContext()
 {
 	return g_pDeviceContext;
+}
+
+IDXGISwapChain* Direct3D_GetSwapChain()
+{
+	return g_pSwapChain;
 }
 
 void Direct3D_SetAlphaBlend(AlphaBlendMode blend)

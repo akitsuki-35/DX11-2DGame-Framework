@@ -14,8 +14,8 @@
 // 他ファイルにインクルードのみで導入可
 
 // debugのみで動作
-#ifdef _DEBUG
+#if defined(DEBUG) || defined(_DEBUG)
 #define new ::new(_NORMAL_BLOCK, __FILE__, __LINE__)
-#endif
+#endif // defined(DEBUG) || defined(_DEBUG)
 
 #endif // DEBUG_MEMORYLEAK_H

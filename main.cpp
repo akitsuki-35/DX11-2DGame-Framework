@@ -10,16 +10,13 @@
 #include <SDKDDKVer.h>
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
-//#include <winuser.h>
 #include <algorithm>
 #include <sstream>
 #include <Xinput.h>
 
-// メモリリーク検出用
-#include "debug_memoryleak.h"
-
 // システム関連インクルード
 #include "direct3d.h"
+#include "main.h"
 #include "system_timer.h"
 #include "audio.h"
 #include "shader2D.h"
@@ -31,11 +28,12 @@
 #include "texture.h"
 
 // 外部入力関連インクルード
-#include "key_logger.h"
+#include "keylogger.h"
 #include "mouse.h"
 
 // デバッグ関連インクルード
 #include "debug_text.h"
+#include "debug_memoryleak.h"
 
 // コントローラ用ライブラリ
 #pragma comment(lib, "xinput.lib")
@@ -45,15 +43,8 @@
 static constexpr char WINDOW_CLASS[]{ "GameWindow" }; //メインウィンドウクラス名
 static constexpr char TITLE[]{ "Game Window" }; //タイトルバーのテキスト
 
-
 /*----------------------------------------------------------------------------------------------------------
-	ウィンドウサイズ定義
-----------------------------------------------------------------------------------------------------------*/
-static constexpr int SCREEN_WIDTH{ 1920 };
-static constexpr int SCREEN_HEIGHT{ 1080 };
-
-/*----------------------------------------------------------------------------------------------------------
-	ウィンドウプロシージャ プロトタイプ宣言
+	プロトタイプ宣言
 ----------------------------------------------------------------------------------------------------------*/
 LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -84,7 +75,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 	RegisterClassEx(&wcex);
 
 	// クライアント領域のサイズを持った短形（left,top,right,bottom）
-	RECT window_rect = { 0, 0, 1280, 720 };
+	RECT window_rect = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 
 	// ウィンドウのスタイル
 	DWORD window_style = WS_OVERLAPPEDWINDOW ^ (WS_THICKFRAME | WS_MAXIMIZEBOX);
@@ -143,9 +134,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 		0.0f, 0.0f, 0, 0, 0.0f, 0.0f);
 
 	Fade_Initialize();
-
 	Fade_Start(0.0f, false);
-
 	Scene_Initialize();
 
 	//時間計測用
@@ -253,7 +242,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_XBUTTONDOWN:
 	case WM_XBUTTONUP:
 	case WM_MOUSEHOVER:
-		//Mouse_ProcessMessage(message, wParam, lParam);
+		Mouse_ProcessMessage(message, wParam, lParam);
 		break;
     case WM_KEYDOWN:
 		if (wParam == VK_ESCAPE)
@@ -267,7 +256,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
 
 	case WM_CLOSE: // ウィンドウ終了確認
-		if (MessageBox(hWnd, "アプリケーションを終了しますか？", "アプリケーションの終了", MB_OKCANCEL | MB_DEFBUTTON2) == IDOK)
+		if (MessageBox(hWnd, "アプリケーションを終了しますか？", "アプリケーションの終了", MB_YESNO | MB_DEFBUTTON2 | MB_ICONEXCLAMATION) == IDYES)
 		{
 			DestroyWindow(hWnd);
 		}

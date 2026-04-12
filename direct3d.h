@@ -1,3 +1,12 @@
+/*
+*
+*	DirectX‰Šú‰»[direct3d.h]
+*
+* @Author  : Asuka Kuroda
+* @Date	: 2026/04/12
+* ----------------------------------------------------------------------------------------------------------
+*
+*/
 #ifndef DIRECT3D_H
 #define DIRECT3D_H
 
@@ -17,6 +26,7 @@ unsigned int Direct3D_GetBackBufferHeight();
 
 ID3D11Device* Direct3D_GetDevice();
 ID3D11DeviceContext* Direct3D_GetDeviceContext();
+IDXGISwapChain* Direct3D_GetSwapChain();
 
 enum AlphaBlendMode
 {

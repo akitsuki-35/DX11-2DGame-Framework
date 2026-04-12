@@ -26,7 +26,7 @@
     <ClCompile Include="fade.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="keyboard.cpp" />
-    <ClCompile Include="key_logger.cpp" />
+    <ClCompile Include="keylogger.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mouse.cpp" />
     <ClCompile Include="scene.cpp" />
@@ -47,7 +47,7 @@
     <ClInclude Include="fade.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="keyboard.h" />
-    <ClInclude Include="key_logger.h" />
+    <ClInclude Include="keylogger.h" />
     <ClInclude Include="mouse.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="shader2d.h" />
@@ -57,6 +57,7 @@
     <ClInclude Include="texture.h" />
     <ClInclude Include="title.h" />
     <ClInclude Include="WICTextureLoader11.h" />
+    <ClInclude Include="main.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="PixelShader2d.hlsl">
