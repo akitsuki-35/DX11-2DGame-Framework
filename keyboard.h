@@ -1,28 +1,20 @@
-//--------------------------------------------------------------------------------------
-// File: Keyboard.h
-//
-// キーボードモジュール
-//
-//--------------------------------------------------------------------------------------
-// 2020/06/07
-//     DirectXTKより、なんちゃってC言語用にシェイプアップ改変
-//
-// Licensed under the MIT License.
-//
-// http://go.microsoft.com/fwlink/?LinkId=248929
-// http://go.microsoft.com/fwlink/?LinkID=615561
-//--------------------------------------------------------------------------------------
-#ifndef HAL_YOUHEI_KEYBOARD_H
-#define HAL_YOUHEI_KEYBOARD_H
-#pragma once
-
+/*＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+*
+*	キーボードモジュール[keyboard.h]
+*
+* 　Author  : Asuka Kuroda
+* 　Date	: 2026/04/13
+* ----------------------------------------------------------------------------------------------------------
+*
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝*/
+#ifndef KEYBOARD_H
+#define KEYBOARD_H
 
 #include <windows.h>
 #include <memory>
 
-
 // キー列挙
-typedef enum Keyboard_Keys_tag : unsigned char
+typedef enum KeyTags : unsigned char
 {
     KK_NONE               = 0x0,
                             
@@ -200,11 +192,11 @@ typedef enum Keyboard_Keys_tag : unsigned char
                             
     KK_PA1                = 0xfd,
     KK_OEMCLEAR           = 0xfe,
-} Keyboard_Keys;
+} Keys;
 
 
 // キーボード状態構造体
-typedef struct Keyboard_State_tag
+typedef struct KeyboardStateTag
 {
     bool Reserved0 : 8;
     bool Back : 1;              // VK_BACK, 0x8
@@ -390,29 +382,27 @@ typedef struct Keyboard_State_tag
     bool Pa1 : 1;               // VK_PA1, 0xFD
     bool OemClear : 1;          // VK_OEM_CLEAR, 0xFE
     bool Reserved26 : 1;
-} Keyboard_State;
-
+} KeyboardState;
 
 // キーボードモジュールの初期化
-void Keyboard_Initialize(void);
-
-// キーボードの現在のキー毎の状態を取得する
-bool Keyboard_IsKeyDown(Keyboard_Keys key);
-bool Keyboard_IsKeyUp(Keyboard_Keys key);
+void KeyboardInitialize();
 
 // キーボードの現在の状態を取得する
-const Keyboard_State* Keyboard_GetState(void);
+const KeyboardState* GetKeyboardState();
 
 // キーボードの状態からキー毎の状態を取得する
-bool Keyboard_IsKeyDown(Keyboard_Keys key, const Keyboard_State* pState);
-bool Keyboard_IsKeyUp(Keyboard_Keys key, const Keyboard_State* pState);
+bool IsKeyDown(Keys key, const KeyboardState* pState);
+bool IsKeyUp(Keys key, const KeyboardState* pState);
+
+// キーボードの現在のキー毎の状態を取得する
+bool IsKeyDown(Keys key);
+bool IsKeyUp(Keys key);
 
 // キーボードの状態をリセットする
-void Keyboard_Reset(void);
+void KeyboardReset();
 
 // キーボード制御のためのウォンどうメッセージプロシージャフック関数
-void Keyboard_ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam);
-
+void KeyboardProcessMessage(UINT message, WPARAM wParam, LPARAM lParam);
 
 //
 // For a Win32 desktop application, call this function from your Window Message Procedure
@@ -434,5 +424,4 @@ void Keyboard_ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam);
 // }
 //
 
-
-#endif // HAL_YOUHEI_KEYBOARD_H
+#endif // KEYBOARD_H

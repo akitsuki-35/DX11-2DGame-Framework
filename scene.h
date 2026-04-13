@@ -10,10 +10,10 @@
 #ifndef SCENE_H
 #define SCENE_H
 
-void Scene_Initialize();
-void Scene_Finalize();
-void Scene_Update(double elapsed_time);
-void Scene_Draw();
+void SceneInitialize();
+void SceneFinalize();
+void SceneUpdate(double elapsedTime);
+void SceneDraw();
 
 enum Scene
 {
@@ -22,7 +22,7 @@ enum Scene
 	SCENE_RESULT
 };
 
-void Scene_SetNextScene(Scene next);
-void Scene_ChangeScene();
+void SetNextScene(Scene next);
+void ChangeScene();
 
 #endif // SCENE_H

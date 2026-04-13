@@ -17,7 +17,7 @@
 // システム関連インクルード
 #include "direct3d.h"
 #include "main.h"
-#include "system_timer.h"
+#include "systemtimer.h"
 #include "audio.h"
 #include "shader2D.h"
 #include "scene.h"
@@ -75,17 +75,17 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 	RegisterClassEx(&wcex);
 
 	// クライアント領域のサイズを持った短形（left,top,right,bottom）
-	RECT window_rect = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
+	RECT windowRect = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 
 	// ウィンドウのスタイル
-	DWORD window_style = WS_OVERLAPPEDWINDOW ^ (WS_THICKFRAME | WS_MAXIMIZEBOX);
+	DWORD windowStyle = WS_OVERLAPPEDWINDOW ^ (WS_THICKFRAME | WS_MAXIMIZEBOX);
 
 	// 指定したクライアント領域を確保するために新たな短形座標を計算
-	AdjustWindowRect(&window_rect, window_style, FALSE);
+	AdjustWindowRect(&windowRect, windowStyle, FALSE);
 
 	// ウィンドウの幅と高さを算出
-	int window_width = window_rect.right - window_rect.left;
-	int window_height = window_rect.bottom - window_rect.top;
+	int window_width = windowRect.right - windowRect.left;
+	int window_height = windowRect.bottom - windowRect.top;
 
 	// プライマリモニターの画面解像度取得
 	int desktop_width = GetSystemMetrics(SM_CXSCREEN);
@@ -96,55 +96,55 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 	int window_y = std::max((desktop_height - window_height) / 2, 0);
 
 	// メインウィンドウの作成
-	HWND hWnd = CreateWindow(WINDOW_CLASS, TITLE, window_style,
+	HWND hWnd = CreateWindow(WINDOW_CLASS, TITLE, windowStyle,
 		window_x, window_y, window_width, window_height, nullptr, nullptr, hInstance, nullptr);
 
 	// タイトルバーと枠を削除
-	SetWindowLongPtr(hWnd, GWL_STYLE, window_style &= ~(WS_CAPTION | WS_THICKFRAME));
+	SetWindowLongPtr(hWnd, GWL_STYLE, windowStyle &= ~(WS_CAPTION | WS_THICKFRAME));
 	
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
 
-	SystemTimer_Initialize();
-	Audio_Initialize();
-	KeyLogger_Initialize();
-	Mouse_Initialize(hWnd);
+	SystemTimerInitialize();
+	AudioInitialize();
+	KeyLoggerInitialize();
+	MouseInitialize(hWnd);
 
 	//各種初期化
-	if (!Direct3D_Initialize(hWnd))
+	if (!Direct3DInitialize(hWnd))
 	{
 		PostQuitMessage(0);
 	}
 	else
 	{
-		if (!Shader2D_Initialize())
+		if (!Shader2DInitialize())
 		{
 			PostQuitMessage(0);
 		}
 		else
 		{
-			Texture_Initialize(Direct3D_GetDevice(), Direct3D_GetDeviceContext());
-			Sprite_Initialize();
+			TextureInitialize(Direct3DGetDevice(), Direct3DGetDeviceContext());
+			SpriteInitialize();
 		}
 	}
 
-	hal::DebugText dt(Direct3D_GetDevice(), Direct3D_GetDeviceContext(),
+	dText::DebugText dt(Direct3DGetDevice(), Direct3DGetDeviceContext(),
 		L"Resources/Texture/Common/text.png",
-		Direct3D_GetBackBufferWidth(), Direct3D_GetBackBufferHeight(),
+		Direct3DGetBackBufferWidth(), Direct3DGetBackBufferHeight(),
 		0.0f, 0.0f, 0, 0, 0.0f, 0.0f);
 
-	Fade_Initialize();
-	Fade_Start(0.0f, false);
-	Scene_Initialize();
+	FadeInitialize();
+	FadeStart(0.0f, false);
+	SceneInitialize();
 
 	//時間計測用
 	double fps = 0.0;
-	double exec_last_time = 0.0;
-	double fps_last_time = 0.0;
-	double current_time = 0.0;
-	ULONG frame_count = 0;
+	double execLastTime = 0.0;
+	double fpsLastTime = 0.0;
+	double currentTime = 0.0;
+	ULONG frameCount = 0;
 
-	exec_last_time = fps_last_time = SystemTimer_GetTime();
+	execLastTime = fpsLastTime = GetSystemTimer();
 
 	//メッセージ＆ゲームループ
 	MSG msg;
@@ -158,34 +158,34 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 		}
 		else //ゲーム処理
 		{
-			current_time = SystemTimer_GetTime();
-			double elapsed_time = current_time - fps_last_time;
+			currentTime = GetSystemTimer();
+			double elapsedTime = currentTime - fpsLastTime;
 
-			if (elapsed_time >= 1.0)
+			if (elapsedTime >= 1.0)
 			{
-				fps = frame_count / elapsed_time;
-				fps_last_time = current_time;
-				frame_count = 0;
+				fps = frameCount / elapsedTime;
+				fpsLastTime = currentTime;
+				frameCount = 0;
 			}
 
 			//1/60秒ごとに実行
-			elapsed_time = current_time - exec_last_time;
-			if (elapsed_time >= (1.0 / 15)) {
-				elapsed_time = (1.0 / 15);
+			elapsedTime = currentTime - execLastTime;
+			if (elapsedTime >= (1.0 / 15)) {
+				elapsedTime = (1.0 / 15);
 			}
-			if ((elapsed_time) >= (1.0 / 60.0))
+			if ((elapsedTime) >= (1.0 / 60.0))
 			{
-				exec_last_time = current_time;
+				execLastTime = currentTime;
 
-				KeyLogger_Update();
+				KeyLoggerUpdate();
 
-				Scene_Update(elapsed_time);
-				Fade_Update(elapsed_time);
+				SceneUpdate(elapsedTime);
+				FadeUpdate(elapsedTime);
 
-				Direct3D_Clear();
+				Direct3DClear();
 
-				Scene_Draw();
-				Fade_Draw();
+				SceneDraw();
+				FadeDraw();
 
 #if defined(DEBUG) || defined(_DEBUG)
 
@@ -197,25 +197,25 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 
 #endif // defined(DEBUG) || defined(_DEBUG)
 
-				Direct3D_Present();
+				Direct3DPresent();
 
-				frame_count++;
+				frameCount++;
 				
 				// シーン遷移を判定
-				Scene_ChangeScene();
+				ChangeScene();
 			}
 		}
 
 	} while (msg.message != WM_QUIT);
 
-	Scene_Finalize();
-	Fade_Finalize();
-	Sprite_Finalize();
-	Texture_Finalize();
-	Shader2D_Finalize();
-	Direct3D_Finalize();
-	Mouse_Finalize();
-	Audio_Finalize();
+	SceneFinalize();
+	FadeFinalize();
+	SpriteFinalize();
+	TextureFinalize();
+	Shader2DFinalize();
+	Direct3DFinalize();
+	MouseFinalize();
+	AudioFinalize();
 
 	return static_cast<int>(msg.wParam);
 }
@@ -228,8 +228,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	switch (message)
 	{
 	case WM_ACTIVATEAPP:
-		Keyboard_ProcessMessage(message, wParam, lParam);
-		Mouse_ProcessMessage(message, wParam, lParam);
+		KeyboardProcessMessage(message, wParam, lParam);
+		MouseProcessMessage(message, wParam, lParam);
 	case WM_INPUT:
 	case WM_MOUSEMOVE:
 	case WM_LBUTTONDOWN:
@@ -242,7 +242,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_XBUTTONDOWN:
 	case WM_XBUTTONUP:
 	case WM_MOUSEHOVER:
-		Mouse_ProcessMessage(message, wParam, lParam);
+		MouseProcessMessage(message, wParam, lParam);
 		break;
     case WM_KEYDOWN:
 		if (wParam == VK_ESCAPE)
@@ -252,7 +252,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_SYSKEYDOWN:
     case WM_KEYUP:
     case WM_SYSKEYUP:
-        Keyboard_ProcessMessage(message, wParam, lParam);
+        KeyboardProcessMessage(message, wParam, lParam);
         break;
 
 	case WM_CLOSE: // ウィンドウ終了確認

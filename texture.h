@@ -1,32 +1,33 @@
-/*==============================================================================
-
-   テクスチャの管理 [texture.h]
-														 Author : Asuka Kuroda
-														 Date   : 2025/06/06
---------------------------------------------------------------------------------
-
-==============================================================================*/
+/*＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+*
+*	テクスチャ管理[texture.h]
+*
+* 　Author  : Asuka Kuroda
+* 　Date	: 2026/04/13
+* ----------------------------------------------------------------------------------------------------------
+*
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝*/
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
 #include <d3d11.h>
 #include <DirectXMath.h>
 
-void Texture_Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-void Texture_Finalize();
+void TextureInitialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+void TextureFinalize();
 
 // テクスチャの読み込み
 // pFileName…画像ファイル名　bMipMap…ミップマップを作るときはtrue
 // 戻り値…テクスチャ管理番号（読み込めなかった場合は -1）
-int Texture_Load(const wchar_t* pFileName, bool bMipMap = true);
+int TextureLoad(const wchar_t* pFileName, bool bMipMap = true);
 
-void Texture_AllRelease();
-void Texture_SetTexture(int texture_id);
+void TextureAllRelease();
+void SetTexture(int texId);
 
-DirectX::XMUINT2 Texture_GetSize(int texture_id);
+DirectX::XMUINT2 TextureGetSize(int texId);
 
-const unsigned int& Texture_GetWidth(int texture_id);
-const unsigned int& Texture_GetHeight(int texture_id);
+const unsigned int& TextureGetWidth(int texId);
+const unsigned int& TextureGetHeight(int texId);
 
 #endif // TEXTURE_H
 

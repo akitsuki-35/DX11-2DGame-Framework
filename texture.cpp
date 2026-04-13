@@ -1,11 +1,12 @@
-/*==============================================================================
-
-   テクスチャの管理 [texture.cpp]
-														 Author : Asuka Kuroda
-														 Date   : 2025/06/06
---------------------------------------------------------------------------------
-
-==============================================================================*/
+/*＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+*
+*	テクスチャ管理[texture.cpp]
+*
+* 　Author  : Asuka Kuroda
+* 　Date	: 2026/04/13
+* ----------------------------------------------------------------------------------------------------------
+*
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝*/
 #include "texture.h"
 #include "direct3d.h"
 using namespace DirectX;
@@ -16,32 +17,32 @@ static constexpr int TEXTURE_MAX = 1024;
 
 struct Texture
 {
-	std::wstring filename{};
+	std::wstring fileName{};
 	unsigned int width{};
 	unsigned int height{};
 	ID3D11ShaderResourceView* pTexture = nullptr;
 };
 
 static Texture g_Textures[TEXTURE_MAX]{};
-unsigned int lasttexture{};
+unsigned int lastTexture{};
 
 // 注意！初期化で外部から設定されるもの。Release不要。
 static ID3D11Device* g_pDevice = nullptr;
 static ID3D11DeviceContext* g_pContext = nullptr;
 
-void Texture_Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+void TextureInitialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
 	// デバイスとデバイスコンテキストの保存
 	g_pDevice = pDevice;
 	g_pContext = pContext;
 }
 
-void Texture_Finalize()
+void TextureFinalize()
 {
-	Texture_AllRelease();
+	TextureAllRelease();
 }
 
-int Texture_Load(const wchar_t* pFileName, bool bMipMap)
+int TextureLoad(const wchar_t* pFileName, bool bMipMap)
 {
 	//読み込み済みのファイル対応
 	for (int i = 0; i < TEXTURE_MAX; i++)
@@ -51,7 +52,7 @@ int Texture_Load(const wchar_t* pFileName, bool bMipMap)
 			continue;
 		}
 
-		if (g_Textures[i].filename == pFileName)
+		if (g_Textures[i].fileName == pFileName)
 		{
 			return i;
 		}
@@ -67,15 +68,15 @@ int Texture_Load(const wchar_t* pFileName, bool bMipMap)
 		}
 
 		//テクスチャからのファイルの読み込み
-		TexMetadata metadata;
+		TexMetadata metaData;
 		ScratchImage image;
 
 		//画像ファイルの読み込み
-		LoadFromWICFile(pFileName, WIC_FLAGS_NONE, &metadata, image);
+		LoadFromWICFile(pFileName, WIC_FLAGS_NONE, &metaData, image);
 		
 		//画像ファイルのサイズを取得
-		g_Textures[i].width = (unsigned int)metadata.width;
-		g_Textures[i].height = (unsigned int)metadata.height;
+		g_Textures[i].width = (unsigned int)metaData.width;
+		g_Textures[i].height = (unsigned int)metaData.height;
 
 		if (bMipMap)
 		{
@@ -83,11 +84,11 @@ int Texture_Load(const wchar_t* pFileName, bool bMipMap)
 			ScratchImage mipChain;
 			GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), TEX_FILTER_DEFAULT, 0, mipChain);
 			image = std::move(mipChain);
-			metadata = image.GetMetadata();
+			metaData = image.GetMetadata();
 		}
 
 		//シェーダーリソースビューの生成
-		HRESULT hr = CreateShaderResourceView(g_pDevice, image.GetImages(), image.GetImageCount(), metadata, &g_Textures[i].pTexture);
+		HRESULT hr = CreateShaderResourceView(g_pDevice, image.GetImages(), image.GetImageCount(), metaData, &g_Textures[i].pTexture);
 
 		if (FAILED(hr))
 		{
@@ -96,7 +97,7 @@ int Texture_Load(const wchar_t* pFileName, bool bMipMap)
 		}
 
 		//ファイル名を保存
-		g_Textures[i].filename = pFileName;
+		g_Textures[i].fileName = pFileName;
 
 		return i;
 	}
@@ -104,7 +105,7 @@ int Texture_Load(const wchar_t* pFileName, bool bMipMap)
 	return -1;
 }
 
-void Texture_AllRelease()
+void TextureAllRelease()
 {
 	for (Texture& t : g_Textures)
 	{
@@ -112,30 +113,30 @@ void Texture_AllRelease()
 	}
 }
 
-void Texture_SetTexture(int texture_id)
+void SetTexture(int texId)
 {
-	if (texture_id < 0)
+	if (texId < 0)
 	{
 		return;
 	}
 
 	// テクスチャ設定
-	g_pContext->PSSetShaderResources(0, 1, &g_Textures[texture_id].pTexture);
+	g_pContext->PSSetShaderResources(0, 1, &g_Textures[texId].pTexture);
 	
 	//lasttexture = g_Textures[texture_id].pTexture;
 }
 
-DirectX::XMUINT2 Texture_GetSize(int texture_id)
+DirectX::XMUINT2 TextureGetSize(int texId)
 {
-	return { g_Textures[texture_id].width,g_Textures[texture_id].height };
+	return { g_Textures[texId].width,g_Textures[texId].height };
 }
 
-const unsigned int& Texture_GetWidth(int texture_id)
+const unsigned int& TextureGetWidth(int texId)
 {
-	return g_Textures[texture_id].width;
+	return g_Textures[texId].width;
 }
 
-const unsigned int& Texture_GetHeight(int texture_id)
+const unsigned int& TextureGetHeight(int texId)
 {
-	return g_Textures[texture_id].height;
+	return g_Textures[texId].height;
 }

@@ -13,53 +13,53 @@
 #include <d3d11.h>
 #include <DirectXMath.h>
 
-class AnimPattern
+class AnimationPattern
 {
 private:
-	int m_texid{};
-	unsigned int m_patternmax{};
-	unsigned int m_horizontalpatternmax{};
-	double m_per_second{};
-	DirectX::XMUINT2 m_startpos{};
-	DirectX::XMUINT2 m_patternsize{};
-	bool m_loopflg{ true };
+	int texId{};
+	unsigned int patternMax{};
+	unsigned int horizontalPatternMax{};
+	double perSecond{};
+	DirectX::XMUINT2 startPos{};
+	DirectX::XMUINT2 patternSize{};
+	bool loopFlg{ true };
 
 public:
-	AnimPattern() = delete;
-	AnimPattern(int texid, int patternmax, int horizontalpatternmax, double per_second,
-		DirectX::XMUINT2 startpos, DirectX::XMUINT2 patternsize, bool loopflg = true)
-		:m_texid(texid), m_patternmax(patternmax), m_horizontalpatternmax(horizontalpatternmax), 
-		m_per_second(per_second), m_startpos(startpos), m_patternsize(patternsize), 
-		m_loopflg(loopflg)
+	AnimationPattern() = delete;
+	AnimationPattern(int texId, int patternMax, int horizontalPatternMax, double perSecond,
+		DirectX::XMUINT2 startPos, DirectX::XMUINT2 patternSize, bool loopFlg = true) :
+		 texId(texId), patternMax(patternMax), horizontalPatternMax(horizontalPatternMax), 
+		perSecond(perSecond), startPos(startPos), patternSize(patternSize), 
+		loopFlg(loopFlg)
 	{}
 
-	int GetPatternMax() { return m_patternmax; }
-	double GetPerSecond() { return m_per_second; }
-	bool LoopFlg() { return m_loopflg; }
+	int GetPatternMax() { return patternMax; }
+	double GetPerSecond() { return perSecond; }
+	bool LoopFlg() { return loopFlg; }
 
-	void Draw(DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size, int pattern_num,
+	void Draw(DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size, int patternNum,
 		DirectX::XMFLOAT4 color = { 1.0f,1.0f,1.0f,1.0f }) const;
 };
 
-class AnimPlayer
+class Animation
 {
 private:
-	int m_pattern{ 0 };
-	double m_accumulatedtime{ 0.0f };
-	AnimPattern* m_pAnimpattern{ nullptr };
-	bool m_is_stoped{ false };
+	int pattern{ 0 };
+	double accumulatedTime{ 0.0f };
+	AnimationPattern* pAnimPattern{ nullptr };
+	bool isStoped{ false };
 
 public:
-	AnimPlayer() = delete;
-	AnimPlayer(AnimPattern* pAnimpattern)
-		: m_pAnimpattern(pAnimpattern) {
+	Animation() = delete;
+	Animation(AnimationPattern* pAnimPattern)
+		: pAnimPattern(pAnimPattern) {
 	}
 
-	void Update(double elapsed_time);
+	void Update(double elapsedTime);
 	void Draw(DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size,
 		DirectX::XMFLOAT4 color = { 1.0f,1.0f,1.0f,1.0f }) const;
 
-	bool IsAnimStoped() const { return m_is_stoped; }
+	bool IsAnimStoped() const { return isStoped; }
 };
 
 #endif // ANIMATION_H

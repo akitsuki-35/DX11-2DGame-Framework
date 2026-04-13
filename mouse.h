@@ -1,36 +1,28 @@
-//--------------------------------------------------------------------------------------
-// File: mouse.h
-//
-// 便利なマウスモジュール
-//
-//--------------------------------------------------------------------------------------
-// 2020/02/11
-//     DirectXTKより、なんちゃってC言語用にシェイプアップ改変
-//
-// Licensed under the MIT License.
-//
-// http://go.microsoft.com/fwlink/?LinkId=248929
-// http://go.microsoft.com/fwlink/?LinkID=615561
-//--------------------------------------------------------------------------------------
-#ifndef HAL_YOUHEI_MOUSE_H
-#define HAL_YOUHEI_MOUSE_H
-#pragma once
-
+/*＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+*
+*	マウスモジュール[mouse.h]
+*
+* 　Author  : Asuka Kuroda
+* 　Date	: 2026/04/13
+* ----------------------------------------------------------------------------------------------------------
+*
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝*/
+#ifndef MOUSE_H
+#define MOUSE_H
 
 #include <windows.h>
 #include <memory>
 
-
 // マウスモード
-typedef enum Mouse_PositionMode_tag
+typedef enum MousePositionModeTag
 {
-    MOUSE_POSITION_MODE_ABSOLUTE, // 絶対座標モード
-    MOUSE_POSITION_MODE_RELATIVE, // 相対座標モード
-} Mouse_PositionMode;
+    MODE_ABSOLUTE, // 絶対座標モード
+    MODE_RELATIVE, // 相対座標モード
+} MousePositionMode;
 
 
 // マウス状態構造体
-typedef struct MouseState_tag
+typedef struct MouseStateTag
 {
     bool leftButton;
     bool middleButton;
@@ -40,43 +32,43 @@ typedef struct MouseState_tag
     int x;
     int y;
     int scrollWheelValue;
-    Mouse_PositionMode positionMode;
-} Mouse_State;
+    MousePositionMode positionMode;
+} MouseState;
 
 
 // マウスモジュールの初期化
-void Mouse_Initialize(HWND window);
+void MouseInitialize(HWND window);
 
 // マウスモジュールの終了処理
-void Mouse_Finalize(void);
+void MouseFinalize();
 
 // マウスの状態を取得する
-void Mouse_GetState(Mouse_State* pState);
+void GetMouseState(MouseState* pState);
 
 // 累積したマウススクロールホイール値をリセットする
-void Mouse_ResetScrollWheelValue(void);
+void MouseResetScrollWheelValue();
 
 // マウスのポジションモードを設定する（デフォルトは絶対座標モード）
-void Mouse_SetMode(Mouse_PositionMode mode);
+void SetMouseMode(MousePositionMode mode);
 
 // マウスの接続を検出する
-bool Mouse_IsConnected(void);
+bool MouseIsConnected();
 
 // マウスカーソルが表示されているか確認する
-bool Mouse_IsVisible(void);
+bool MouseIsVisible();
 
 // マウスカーソル表示を設定する
-void Mouse_SetVisible(bool visible);
+void MouseSetVisible(bool visible);
 
 // マウス制御のためのウィンドウメッセージプロシージャフック関数
-void Mouse_ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam);
+void MouseProcessMessage(UINT message, WPARAM wParam, LPARAM lParam);
 
 
 // 導入方法
 //
 // 対象のウィンドウが生成されたらそのウィンドウハンドルを引数に初期化関数を呼ぶ
 //
-// Mouse_Initialize(hwnd);
+// MouseInitialize(hwnd);
 //
 // ウィンドウメッセージプロシージャからマウス制御用フック関数を呼び出す
 //

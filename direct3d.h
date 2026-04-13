@@ -15,18 +15,18 @@
 
 #define SAFE_RELEASE(o) if (o) { (o)->Release(); o = NULL; }
 
-bool Direct3D_Initialize(HWND hwnd);
-void Direct3D_Finalize();
+bool Direct3DInitialize(HWND hwnd);
+void Direct3DFinalize();
 
-void Direct3D_Clear(); //バックバッファのクリア
-void Direct3D_Present(); //バックバッファの表示
+void Direct3DClear(); //バックバッファのクリア
+void Direct3DPresent(); //バックバッファの表示
 
-unsigned int Direct3D_GetBackBufferWidth();
-unsigned int Direct3D_GetBackBufferHeight();
+unsigned int Direct3DGetBackBufferWidth();
+unsigned int Direct3DGetBackBufferHeight();
 
-ID3D11Device* Direct3D_GetDevice();
-ID3D11DeviceContext* Direct3D_GetDeviceContext();
-IDXGISwapChain* Direct3D_GetSwapChain();
+ID3D11Device* Direct3DGetDevice();
+ID3D11DeviceContext* Direct3DGetDeviceContext();
+IDXGISwapChain* Direct3DGetSwapChain();
 
 enum AlphaBlendMode
 {
@@ -34,6 +34,6 @@ enum AlphaBlendMode
 	BLEND_ADD
 };
 
-void Direct3D_SetAlphaBlend(AlphaBlendMode blend);
+void Direct3DSetAlphaBlend(AlphaBlendMode blend);
 
 #endif //DIRECT3D_H

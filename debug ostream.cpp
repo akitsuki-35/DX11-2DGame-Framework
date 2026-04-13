@@ -1,6 +1,6 @@
 /*＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 *
-*	debug ostream[debug ostream.cpp]
+*	デバッグログ表示[debug ostream.cpp]
 *
 * 　作成者 : Asuka Kuroda
 * 　作成日 : 2025/4/25
@@ -9,7 +9,7 @@
 ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝*/
 #include "debug_ostream.h"
 
-namespace hal
+namespace dOst
 {
-	debug_ostream dout;
+	DebugOstream dout;
 }

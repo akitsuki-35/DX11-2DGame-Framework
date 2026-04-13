@@ -1,46 +1,37 @@
-//--------------------------------------------------------------------------------------
-// File: mouse.cpp
-//
-// 便利なマウスモジュール
-//
-//--------------------------------------------------------------------------------------
-// 2020/02/11
-//     DirectXTKより、なんちゃってC言語用にシェイプアップ改変
-//
-// Licensed under the MIT License.
-//
-// http://go.microsoft.com/fwlink/?LinkId=248929
-// http://go.microsoft.com/fwlink/?LinkID=615561
-//--------------------------------------------------------------------------------------
+/*＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+*
+*	マウスモジュール[mouse.cpp]
+*
+* 　Author  : Asuka Kuroda
+* 　Date	: 2026/04/13
+* ----------------------------------------------------------------------------------------------------------
+*
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝*/
 #include "mouse.h"
 
 #include <windowsx.h>
 #include <assert.h>
 
-
 #define SAFE_CLOSEHANDLE(h) if(h){CloseHandle(h); h = NULL;}
 
+static MouseState g_State = {};
+static HWND g_Window = NULL;
+static MousePositionMode  g_Mode = MODE_ABSOLUTE;
+static HANDLE g_ScrollWheelValue = NULL;
+static HANDLE g_RelativeRead = NULL;
+static HANDLE g_AbsoluteMode = NULL;
+static HANDLE g_RelativeMode = NULL;
+static int g_LastX = 0;
+static int g_LastY = 0;
+static int g_RelativeX = INT32_MAX;
+static int g_RelativeY = INT32_MAX;
+static bool g_InFocus = true;
 
-static Mouse_State        gState = {};
-static HWND               gWindow = NULL;
-static Mouse_PositionMode gMode = MOUSE_POSITION_MODE_ABSOLUTE;
-static HANDLE             gScrollWheelValue = NULL;
-static HANDLE             gRelativeRead = NULL;
-static HANDLE             gAbsoluteMode = NULL;
-static HANDLE             gRelativeMode = NULL;
-static int                gLastX = 0;
-static int                gLastY = 0;
-static int                gRelativeX = INT32_MAX;
-static int                gRelativeY = INT32_MAX;
-static bool               gInFocus = true;
+static void ClipToWindow();
 
-
-static void clipToWindow(void);
-
-
-void Mouse_Initialize(HWND window)
+void MouseInitialize(HWND window)
 {
-    RtlZeroMemory(&gState, sizeof(gState));
+    RtlZeroMemory(&g_State, sizeof(g_State));
 
     assert(window != NULL);
 
@@ -51,88 +42,88 @@ void Mouse_Initialize(HWND window)
     Rid.hwndTarget = window;
     RegisterRawInputDevices(&Rid, 1, sizeof(RAWINPUTDEVICE));
 
-    gWindow = window;
-    gMode = MOUSE_POSITION_MODE_ABSOLUTE;
+    g_Window = window;
+    g_Mode = MODE_ABSOLUTE;
 
-    if (!gScrollWheelValue) { gScrollWheelValue = CreateEventEx(nullptr, nullptr, CREATE_EVENT_MANUAL_RESET, EVENT_MODIFY_STATE | SYNCHRONIZE); }
-    if (!gRelativeRead) { gRelativeRead = CreateEventEx(nullptr, nullptr, CREATE_EVENT_MANUAL_RESET, EVENT_MODIFY_STATE | SYNCHRONIZE); }
-    if (!gAbsoluteMode) { gAbsoluteMode = CreateEventEx(nullptr, nullptr, 0, EVENT_MODIFY_STATE | SYNCHRONIZE); }
-    if (!gRelativeMode) { gRelativeMode = CreateEventEx(nullptr, nullptr, 0, EVENT_MODIFY_STATE | SYNCHRONIZE); }
+    if (!g_ScrollWheelValue) { g_ScrollWheelValue = CreateEventEx(nullptr, nullptr, CREATE_EVENT_MANUAL_RESET, EVENT_MODIFY_STATE | SYNCHRONIZE); }
+    if (!g_RelativeRead) { g_RelativeRead = CreateEventEx(nullptr, nullptr, CREATE_EVENT_MANUAL_RESET, EVENT_MODIFY_STATE | SYNCHRONIZE); }
+    if (!g_AbsoluteMode) { g_AbsoluteMode = CreateEventEx(nullptr, nullptr, 0, EVENT_MODIFY_STATE | SYNCHRONIZE); }
+    if (!g_RelativeMode) { g_RelativeMode = CreateEventEx(nullptr, nullptr, 0, EVENT_MODIFY_STATE | SYNCHRONIZE); }
 
-    gLastX = 0;
-    gLastY = 0;
-    gRelativeX = INT32_MAX;
-    gRelativeY = INT32_MAX;
+    g_LastX = 0;
+    g_LastY = 0;
+    g_RelativeX = INT32_MAX;
+    g_RelativeY = INT32_MAX;
 
-    gInFocus = true;
+    g_InFocus = true;
 }
 
-void Mouse_Finalize(void)
+void MouseFinalize()
 {
-    SAFE_CLOSEHANDLE(gScrollWheelValue);
-    SAFE_CLOSEHANDLE(gRelativeRead);
-    SAFE_CLOSEHANDLE(gAbsoluteMode);
-    SAFE_CLOSEHANDLE(gRelativeMode);
+    SAFE_CLOSEHANDLE(g_ScrollWheelValue);
+    SAFE_CLOSEHANDLE(g_RelativeRead);
+    SAFE_CLOSEHANDLE(g_AbsoluteMode);
+    SAFE_CLOSEHANDLE(g_RelativeMode);
 }
 
-void Mouse_GetState(Mouse_State* pState)
+void GetMouseState(MouseState* pState)
 {
-    memcpy(pState, &gState, sizeof(gState));
-    pState->positionMode = gMode;
+    memcpy(pState, &g_State, sizeof(g_State));
+    pState->positionMode = g_Mode;
 
-    DWORD Result = WaitForSingleObjectEx(gScrollWheelValue, 0, FALSE);
-    if (Result == WAIT_FAILED) { return; }
+    DWORD result = WaitForSingleObjectEx(g_ScrollWheelValue, 0, FALSE);
+    if (result == WAIT_FAILED) { return; }
 
-    if (Result == WAIT_OBJECT_0) {
+    if (result == WAIT_OBJECT_0) {
 
         pState->scrollWheelValue = 0;
     }
 
-    if (pState->positionMode == MOUSE_POSITION_MODE_RELATIVE) {
+    if (pState->positionMode == MODE_RELATIVE) {
 
-        Result = WaitForSingleObjectEx(gRelativeRead, 0, FALSE);
-        if (Result == WAIT_FAILED) { return; }
+        result = WaitForSingleObjectEx(g_RelativeRead, 0, FALSE);
+        if (result == WAIT_FAILED) { return; }
 
-        if (Result == WAIT_OBJECT_0) {
+        if (result == WAIT_OBJECT_0) {
             pState->x = 0;
             pState->y = 0;
         }
         else {
-            SetEvent(gRelativeRead);
+            SetEvent(g_RelativeRead);
         }
     }
 }
 
-void Mouse_ResetScrollWheelValue(void)
+void MouseResetScrollWheelValue()
 {
-    SetEvent(gScrollWheelValue);
+    SetEvent(g_ScrollWheelValue);
 }
 
-void Mouse_SetMode(Mouse_PositionMode mode)
+void SetMouseMode(MousePositionMode mode)
 {
-    if (gMode == mode)
+    if (g_Mode == mode)
         return;
 
-    SetEvent((mode == MOUSE_POSITION_MODE_ABSOLUTE) ? gAbsoluteMode : gRelativeMode);
+    SetEvent((mode == MODE_ABSOLUTE) ? g_AbsoluteMode : g_RelativeMode);
 
-    assert(gWindow != NULL);
+    assert(g_Window != NULL);
 
     TRACKMOUSEEVENT tme;
     tme.cbSize = sizeof(tme);
     tme.dwFlags = TME_HOVER;
-    tme.hwndTrack = gWindow;
+    tme.hwndTrack = g_Window;
     tme.dwHoverTime = 1;
     TrackMouseEvent(&tme);
 }
 
-bool Mouse_IsConnected(void)
+bool MouseIsConnected()
 {
     return GetSystemMetrics(SM_MOUSEPRESENT) != 0;
 }
 
-bool Mouse_IsVisible(void)
+bool MouseIsVisible()
 {
-    if (gMode == MOUSE_POSITION_MODE_RELATIVE) {
+    if (g_Mode == MODE_RELATIVE) {
         return false;
     }
 
@@ -142,9 +133,9 @@ bool Mouse_IsVisible(void)
     return (info.flags & CURSOR_SHOWING) != 0;
 }
 
-void Mouse_SetVisible(bool visible)
+void MouseSetVisible(bool visible)
 {
-    if (gMode == MOUSE_POSITION_MODE_RELATIVE) {
+    if (g_Mode == MODE_RELATIVE) {
         return;
     }
 
@@ -158,54 +149,54 @@ void Mouse_SetVisible(bool visible)
     }
 }
 
-void Mouse_ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
+void MouseProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
 {
     HANDLE evts[3] = {
-        gScrollWheelValue,
-        gAbsoluteMode,
-        gRelativeMode
+        g_ScrollWheelValue,
+        g_AbsoluteMode,
+        g_RelativeMode
     };
 
     switch (WaitForMultipleObjectsEx(_countof(evts), evts, FALSE, 0, FALSE))
     {
     case WAIT_OBJECT_0:
-        gState.scrollWheelValue = 0;
+        g_State.scrollWheelValue = 0;
         ResetEvent(evts[0]);
         break;
 
     case (WAIT_OBJECT_0 + 1):
     {
-        gMode = MOUSE_POSITION_MODE_ABSOLUTE;
+        g_Mode = MODE_ABSOLUTE;
         ClipCursor(nullptr);
 
         POINT point;
-        point.x = gLastX;
-        point.y = gLastY;
+        point.x = g_LastX;
+        point.y = g_LastY;
 
         // リモートディスクトップに対応するために移動前にカーソルを表示する
         ShowCursor(TRUE);
 
-        if (MapWindowPoints(gWindow, nullptr, &point, 1)) {
+        if (MapWindowPoints(g_Window, nullptr, &point, 1)) {
             SetCursorPos(point.x, point.y);
         }
 
-        gState.x = gLastX;
-        gState.y = gLastY;
+        g_State.x = g_LastX;
+        g_State.y = g_LastY;
     }
     break;
 
     case (WAIT_OBJECT_0 + 2):
     {
-        ResetEvent(gRelativeRead);
+        ResetEvent(g_RelativeRead);
 
-        gMode = MOUSE_POSITION_MODE_RELATIVE;
-        gState.x = gState.y = 0;
-        gRelativeX = INT32_MAX;
-        gRelativeY = INT32_MAX;
+        g_Mode = MODE_RELATIVE;
+        g_State.x = g_State.y = 0;
+        g_RelativeX = INT32_MAX;
+        g_RelativeY = INT32_MAX;
 
         ShowCursor(FALSE);
 
-        clipToWindow();
+        ClipToWindow();
     }
     break;
 
@@ -218,25 +209,25 @@ void Mouse_ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
     case WM_ACTIVATEAPP:
         if (wParam) {
 
-            gInFocus = true;
+            g_InFocus = true;
 
-            if (gMode == MOUSE_POSITION_MODE_RELATIVE) {
+            if (g_Mode == MODE_RELATIVE) {
 
-                gState.x = gState.y = 0;
+                g_State.x = g_State.y = 0;
                 ShowCursor(FALSE);
-                clipToWindow();
+                ClipToWindow();
             }
         }
         else {
-            int scrollWheel = gState.scrollWheelValue;
-            memset(&gState, 0, sizeof(gState));
-            gState.scrollWheelValue = scrollWheel;
-            gInFocus = false;
+            int scrollWheel = g_State.scrollWheelValue;
+            memset(&g_State, 0, sizeof(g_State));
+            g_State.scrollWheelValue = scrollWheel;
+            g_InFocus = false;
         }
         return;
 
     case WM_INPUT:
-        if (gInFocus && gMode == MOUSE_POSITION_MODE_RELATIVE) {
+        if (g_InFocus && g_Mode == MODE_RELATIVE) {
 
             RAWINPUT raw;
             UINT rawSize = sizeof(raw);
@@ -247,10 +238,10 @@ void Mouse_ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
 
                 if (!(raw.data.mouse.usFlags & MOUSE_MOVE_ABSOLUTE)) {
 
-                    gState.x = raw.data.mouse.lLastX;
-                    gState.y = raw.data.mouse.lLastY;
+                    g_State.x = raw.data.mouse.lLastX;
+                    g_State.y = raw.data.mouse.lLastY;
 
-                    ResetEvent(gRelativeRead);
+                    ResetEvent(g_RelativeRead);
                 }
                 else if (raw.data.mouse.usFlags & MOUSE_VIRTUAL_DESKTOP) {
 
@@ -261,18 +252,18 @@ void Mouse_ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
                     int x = (int)((raw.data.mouse.lLastX / 65535.0f) * width);
                     int y = (int)((raw.data.mouse.lLastY / 65535.0f) * height);
 
-                    if (gRelativeX == INT32_MAX) {
-                        gState.x = gState.y = 0;
+                    if (g_RelativeX == INT32_MAX) {
+                        g_State.x = g_State.y = 0;
                     }
                     else {
-                        gState.x = x - gRelativeX;
-                        gState.y = y - gRelativeY;
+                        g_State.x = x - g_RelativeX;
+                        g_State.y = y - g_RelativeY;
                     }
 
-                    gRelativeX = x;
-                    gRelativeY = y;
+                    g_RelativeX = x;
+                    g_RelativeY = y;
 
-                    ResetEvent(gRelativeRead);
+                    ResetEvent(g_RelativeRead);
                 }
             }
         }
@@ -283,42 +274,42 @@ void Mouse_ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
         break;
 
     case WM_LBUTTONDOWN:
-        gState.leftButton = true;
+        g_State.leftButton = true;
         break;
 
     case WM_LBUTTONUP:
-        gState.leftButton = false;
+        g_State.leftButton = false;
         break;
 
     case WM_RBUTTONDOWN:
-        gState.rightButton = true;
+        g_State.rightButton = true;
         break;
 
     case WM_RBUTTONUP:
-        gState.rightButton = false;
+        g_State.rightButton = false;
         break;
 
     case WM_MBUTTONDOWN:
-        gState.middleButton = true;
+        g_State.middleButton = true;
         break;
 
     case WM_MBUTTONUP:
-        gState.middleButton = false;
+        g_State.middleButton = false;
         break;
 
     case WM_MOUSEWHEEL:
-        gState.scrollWheelValue += GET_WHEEL_DELTA_WPARAM(wParam);
+        g_State.scrollWheelValue += GET_WHEEL_DELTA_WPARAM(wParam);
         return;
 
     case WM_XBUTTONDOWN:
         switch (GET_XBUTTON_WPARAM(wParam))
         {
         case XBUTTON1:
-            gState.xButton1 = true;
+            g_State.xButton1 = true;
             break;
 
         case XBUTTON2:
-            gState.xButton2 = true;
+            g_State.xButton2 = true;
             break;
         }
         break;
@@ -327,11 +318,11 @@ void Mouse_ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
         switch (GET_XBUTTON_WPARAM(wParam))
         {
         case XBUTTON1:
-            gState.xButton1 = false;
+            g_State.xButton1 = false;
             break;
 
         case XBUTTON2:
-            gState.xButton2 = false;
+            g_State.xButton2 = false;
             break;
         }
         break;
@@ -340,27 +331,27 @@ void Mouse_ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
         break;
 
     default:
-        // マウスに対するメッセージは無かった…
+        // メッセージなし
         return;
     }
 
-    if (gMode == MOUSE_POSITION_MODE_ABSOLUTE) {
+    if (g_Mode == MODE_ABSOLUTE) {
 
         // すべてのマウスメッセージに対して新しい座標を取得する
         int xPos = GET_X_LPARAM(lParam);
         int yPos = GET_Y_LPARAM(lParam);
 
-        gState.x = gLastX = xPos;
-        gState.y = gLastY = yPos;
+        g_State.x = g_LastX = xPos;
+        g_State.y = g_LastY = yPos;
     }
 }
 
-void clipToWindow(void)
+void ClipToWindow()
 {
-    assert(gWindow != NULL);
+    assert(g_Window != NULL);
 
     RECT rect;
-    GetClientRect(gWindow, &rect);
+    GetClientRect(g_Window, &rect);
 
     POINT ul;
     ul.x = rect.left;
@@ -370,8 +361,8 @@ void clipToWindow(void)
     lr.x = rect.right;
     lr.y = rect.bottom;
 
-    MapWindowPoints(gWindow, NULL, &ul, 1);
-    MapWindowPoints(gWindow, NULL, &lr, 1);
+    MapWindowPoints(g_Window, NULL, &ul, 1);
+    MapWindowPoints(g_Window, NULL, &lr, 1);
 
     rect.left = ul.x;
     rect.top = ul.y;
@@ -381,4 +372,3 @@ void clipToWindow(void)
 
     ClipCursor(&rect);
 }
-

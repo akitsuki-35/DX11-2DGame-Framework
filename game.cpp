@@ -12,24 +12,27 @@
 #include "keylogger.h"
 #include "fade.h"
 
+#include "sprite.h"
+#include "texture.h"
+
 #include "debug_memoryleak.h"
 
-void Game_Initialize()
+void GameInitialize()
 {
-	Fade_Start(1.0, true);
+	FadeStart(1.0, true);
 }
 
-void Game_Finalize()
-{
-
-}
-
-void Game_Update(double /*elapsed_time*/)
+void GameFinalize()
 {
 
 }
 
-void Game_Draw()
+void GameUpdate(double /*elapsedTime*/)
+{
+
+}
+
+void GameDraw()
 {
 
 }

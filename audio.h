@@ -10,11 +10,11 @@
 #ifndef AUDIO_H
 #define AUDIO_H
 
-void Audio_Initialize();
-void Audio_Finalize();
+void AudioInitialize();
+void AudioFinalize();
 
-int Audio_Load(const char* FileName);
-void Audio_Release(int Index);
-void Audio_Play(int Index, bool Loop = false);
+int AudioLoad(const char* fileName);
+void AudioRelease(int index);
+void AudioPlay(int index, bool loop = false);
 
 #endif // AUDIO_H
