@@ -57,10 +57,10 @@ void FadeDraw()
 		return;
 	}
 
-	SpriteDraw({ 0.0f, 0.0f },
+	SpriteDraw(g_FadeTexID, { 0.0f, 0.0f },
 		{ static_cast<float>(Direct3DGetBackBufferWidth()),
 		static_cast<float>(Direct3DGetBackBufferHeight()) },
-		g_FadeTexID,g_FadeColor);
+		g_FadeColor);
 }
 
 void FadeStart(double fadeTime, bool isFadeIn, XMFLOAT4 fadeColor)

@@ -24,7 +24,6 @@ struct Texture
 };
 
 static Texture g_Textures[TEXTURE_MAX]{};
-unsigned int lastTexture{};
 
 // 注意！初期化で外部から設定されるもの。Release不要。
 static ID3D11Device* g_pDevice = nullptr;
@@ -115,18 +114,13 @@ void TextureAllRelease()
 
 void SetTexture(int texId)
 {
-	if (texId < 0)
-	{
-		return;
-	}
+	if (texId < 0) return;
 
 	// テクスチャ設定
 	g_pContext->PSSetShaderResources(0, 1, &g_Textures[texId].pTexture);
-	
-	//lasttexture = g_Textures[texture_id].pTexture;
 }
 
-DirectX::XMUINT2 TextureGetSize(int texId)
+const DirectX::XMUINT2& TextureGetSize(int texId)
 {
 	return { g_Textures[texId].width,g_Textures[texId].height };
 }

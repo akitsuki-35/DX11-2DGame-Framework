@@ -15,11 +15,11 @@ using namespace DirectX;
 void AnimationPattern::Draw(DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size, int patternNum,
 	XMFLOAT4 color) const
 {
-	SpriteDrawUV(position, size,
+	SpriteDrawUV(texId, position, size,
 		{ startPos.x + patternSize.x * (patternNum % horizontalPatternMax),
 		  startPos.y + patternSize.y * (patternNum / horizontalPatternMax) },
 		{ horizontalPatternMax, patternMax / horizontalPatternMax},
-		  texId, color);
+		color);
 }
 
 void Animation::Update(double elapsedTime)
