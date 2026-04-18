@@ -1,55 +1,44 @@
-//--------------------------------------------------------------------------------------
-// File: Keyboard.cpp
-//
-// キーボードモジュール
-//
-//--------------------------------------------------------------------------------------
-// 2020/06/07
-//     DirectXTKより、なんちゃってC言語用にシェイプアップ改変
-//
-// Licensed under the MIT License.
-//
-// http://go.microsoft.com/fwlink/?LinkId=248929
-// http://go.microsoft.com/fwlink/?LinkID=615561
-//--------------------------------------------------------------------------------------
+/*＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+*
+*	キーボードモジュール[keyboard.cpp]
+*
+* 　Author  : Asuka Kuroda
+* 　Date	: 2026/04/13
+* ----------------------------------------------------------------------------------------------------------
+*
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝*/
 #include "keyboard.h"
 
 #include <assert.h>
 
+static_assert(sizeof(KeyboardState) == 256 / 8, "キーボード状態構造体のサイズ不一致");
 
-static_assert(sizeof(Keyboard_State) == 256 / 8, "キーボード状態構造体のサイズ不一致");
-
-
-static Keyboard_State gState = {};
-
+static KeyboardState g_State = {};
 
 static void keyDown(int key)
 {
-    if (key < 0 || key > 0xfe) { return;  }
+    if (key < 0 || key > 0xfe) { return; }
 
-    unsigned int* p = (unsigned int*)&gState;
+    unsigned int* p = (unsigned int*)&g_State;
     unsigned int bf = 1u << (key & 0x1f);
     p[(key >> 5)] |= bf;
 }
-
 
 static void keyUp(int key)
 {
     if (key < 0 || key > 0xfe) { return; }
 
-    unsigned int* p = (unsigned int*)&gState;
+    unsigned int* p = (unsigned int*)&g_State;
     unsigned int bf = 1u << (key & 0x1f);
     p[(key >> 5)] &= ~bf;
 }
 
-
-void Keyboard_Initialize(void)
+void KeyboardInitialize()
 {
-    Keyboard_Reset();
+    KeyboardReset();
 }
 
-
-bool Keyboard_IsKeyDown(Keyboard_Keys key, const Keyboard_State* pState)
+bool IsKeyDown(Keys key, const KeyboardState* pState)
 {
     if (key <= 0xfe)
     {
@@ -61,7 +50,7 @@ bool Keyboard_IsKeyDown(Keyboard_Keys key, const Keyboard_State* pState)
 }
 
 
-bool Keyboard_IsKeyUp(Keyboard_Keys key, const Keyboard_State* pState)
+bool IsKeyUp(Keys key, const KeyboardState* pState)
 {
     if (key <= 0xfe)
     {
@@ -72,41 +61,36 @@ bool Keyboard_IsKeyUp(Keyboard_Keys key, const Keyboard_State* pState)
     return false;
 }
 
-
-bool Keyboard_IsKeyDown(Keyboard_Keys key)
+bool IsKeyDown(Keys key)
 {
-    return Keyboard_IsKeyDown(key, &gState);
+    return IsKeyDown(key, &g_State);
 }
 
-
-bool Keyboard_IsKeyUp(Keyboard_Keys key)
+bool IsKeyUp(Keys key)
 {
-    return Keyboard_IsKeyUp(key, &gState);
+    return IsKeyUp(key, &g_State);
 }
-
 
 // キーボードの現在の状態を取得する
-const Keyboard_State* Keyboard_GetState(void)
+const KeyboardState* GetKeyboardState(void)
 {
-    return &gState;
+    return &g_State;
 }
 
-
-void Keyboard_Reset(void)
+void KeyboardReset()
 {
-    ZeroMemory(&gState, sizeof(Keyboard_State));
+    ZeroMemory(&g_State, sizeof(KeyboardState));
 }
-
 
 // キーボード制御のためのウォンどうメッセージプロシージャフック関数
-void Keyboard_ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
+void KeyboardProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
 {
     bool down = false;
 
     switch (message)
     {
     case WM_ACTIVATEAPP:
-        Keyboard_Reset();
+        KeyboardReset();
         return;
 
     case WM_KEYDOWN:

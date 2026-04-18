@@ -14,16 +14,16 @@
 static Scene g_CurrentScene = SCENE_GAME; // 現在シーン
 static Scene g_NextScene = g_CurrentScene; // 次の遷移シーン
 
-void Scene_Initialize()
+void SceneInitialize()
 {
 	switch (g_CurrentScene)
 	{
 	case SCENE_TITLE:
-		Title_Initialize();
+		TitleInitialize();
 		break;
 
 	case SCENE_GAME:
-		Game_Initialize();
+		GameInitialize();
 		break;
 
 	case SCENE_RESULT:
@@ -35,16 +35,16 @@ void Scene_Initialize()
 	}
 }
 
-void Scene_Finalize()
+void SceneFinalize()
 {
 	switch (g_CurrentScene)
 	{
 	case SCENE_TITLE:
-		Title_Finalize();
+		TitleFinalize();
 		break;
 
 	case SCENE_GAME:
-		Game_Finalize();
+		GameFinalize();
 		break;
 
 	case SCENE_RESULT:
@@ -56,16 +56,16 @@ void Scene_Finalize()
 	}
 }
 
-void Scene_Update(double elapsed_time)
+void SceneUpdate(double elapsedTime)
 {
 	switch (g_CurrentScene)
 	{
 	case SCENE_TITLE:
-		Title_Update(elapsed_time);
+		TitleUpdate(elapsedTime);
 		break;
 
 	case SCENE_GAME:
-		Game_Update(elapsed_time);
+		GameUpdate(elapsedTime);
 		break;
 
 	case SCENE_RESULT:
@@ -77,16 +77,16 @@ void Scene_Update(double elapsed_time)
 	}
 }
 
-void Scene_Draw()
+void SceneDraw()
 {
 	switch (g_CurrentScene)
 	{
 	case SCENE_TITLE:
-		Title_Draw();
+		TitleDraw();
 		break;
 
 	case SCENE_GAME:
-		Game_Draw();
+		GameDraw();
 		break;
 
 	case SCENE_RESULT:
@@ -98,22 +98,22 @@ void Scene_Draw()
 	}
 }
 
-void Scene_SetNextScene(Scene next)
+void SetNextScene(Scene next)
 {
 	g_NextScene = next;
 }
 
-void Scene_ChangeScene()
+void ChangeScene()
 {
 	if (g_CurrentScene != g_NextScene)
 	{
 		// 現在シーンの終了処理
-		Scene_Finalize();
+		SceneFinalize();
 
 		// シーンを次のシーンへ遷移
 		g_CurrentScene = g_NextScene;
 
 		//遷移先のシーンを初期化
-		Scene_Initialize();
+		SceneInitialize();
 	}
 }

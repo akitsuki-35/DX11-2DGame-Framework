@@ -27,38 +27,37 @@ static ID3D11SamplerState* g_pSamplerStatePoint{ nullptr };
 
 static ID3D11Buffer* g_pPSConstantBuffer{ nullptr };
 
-bool Shader2D_Initialize()
+bool Shader2DInitialize()
 {
 	HRESULT hr; // 戻り値格納用
 
 	// 事前コンパイル済み頂点シェーダーの読み込み
-	std::ifstream ifs_vs("Resources/Shaders/VertexShader2d.cso", std::ios::binary);
+	std::ifstream ifsVs("Resources/Shaders/VertexShader2d.cso", std::ios::binary);
 
-	if (!ifs_vs) {
+	if (!ifsVs) {
 		MessageBox(nullptr, "頂点シェーダーの読み込みに失敗しました\n\nVertexShader2d.cso", "エラー", MB_OK);
 		return false;
 	}
 
 	// ファイルサイズを取得
-	ifs_vs.seekg(0, std::ios::end); // ファイルポインタを末尾に移動
-	std::streamsize filesize = ifs_vs.tellg(); // ファイルポインタの位置を取得（つまりファイルサイズ）
-	ifs_vs.seekg(0, std::ios::beg); // ファイルポインタを先頭に戻す
+	ifsVs.seekg(0, std::ios::end); // ファイルポインタを末尾に移動
+	std::streamsize fileSize = ifsVs.tellg(); // ファイルポインタの位置を取得（つまりファイルサイズ）
+	ifsVs.seekg(0, std::ios::beg); // ファイルポインタを先頭に戻す
 
 	// バイナリデータを格納するためのバッファを確保
-	unsigned char* vsbinary_pointer = new unsigned char[filesize];
+	unsigned char* vsBinaryPointer = new unsigned char[fileSize];
 	
-	ifs_vs.read((char*)vsbinary_pointer, filesize); // バイナリデータを読み込む
-	ifs_vs.close(); // ファイルを閉じる
+	ifsVs.read((char*)vsBinaryPointer, fileSize); // バイナリデータを読み込む
+	ifsVs.close(); // ファイルを閉じる
 
 	// 頂点シェーダーの作成
-	hr = Direct3D_GetDevice()->CreateVertexShader(vsbinary_pointer, filesize, nullptr, &g_pVertexShader);
+	hr = Direct3DGetDevice()->CreateVertexShader(vsBinaryPointer, fileSize, nullptr, &g_pVertexShader);
 
 	if (FAILED(hr)) {
-		hal::dout << "Shader2d_Initialize() : 頂点シェーダーの作成に失敗しました" << std::endl;
-		delete[] vsbinary_pointer; // メモリリークしないようにバイナリデータのバッファを解放
+		dOst::dout << "Shader2d_Initialize() : 頂点シェーダーの作成に失敗しました" << std::endl;
+		delete[] vsBinaryPointer; // メモリリークしないようにバイナリデータのバッファを解放
 		return false;
 	}
-
 
 	// 頂点レイアウトの定義
 	D3D11_INPUT_ELEMENT_DESC layout[] = {
@@ -70,89 +69,89 @@ bool Shader2D_Initialize()
 	UINT num_elements = ARRAYSIZE(layout); // 配列の要素数を取得
 
 	// 頂点レイアウトの作成
-	hr = Direct3D_GetDevice()->CreateInputLayout(layout, num_elements, vsbinary_pointer, filesize, &g_pInputLayout);
+	hr = Direct3DGetDevice()->CreateInputLayout(layout, num_elements, vsBinaryPointer, fileSize, &g_pInputLayout);
 
-	delete[] vsbinary_pointer; // バイナリデータのバッファを解放
+	delete[] vsBinaryPointer; // バイナリデータのバッファを解放
 
 	if (FAILED(hr)) {
-		hal::dout << "Shader2d_Initialize() : 頂点レイアウトの作成に失敗しました" << std::endl;
+		dOst::dout << "Shader2d_Initialize() : 頂点レイアウトの作成に失敗しました" << std::endl;
 		return false;
 	}
 
 
 	// 頂点シェーダー用定数バッファの作成
-	D3D11_BUFFER_DESC buffer_desc{};
-	buffer_desc.ByteWidth = sizeof(XMFLOAT4X4); // バッファのサイズ
-	buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER; // バインドフラグ
-	Direct3D_GetDevice()->CreateBuffer(&buffer_desc, nullptr, &g_pVSConstantBufferproj);
+	D3D11_BUFFER_DESC bufferDesc{};
+	bufferDesc.ByteWidth = sizeof(XMFLOAT4X4); // バッファのサイズ
+	bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER; // バインドフラグ
+	Direct3DGetDevice()->CreateBuffer(&bufferDesc, nullptr, &g_pVSConstantBufferproj);
 
-	buffer_desc.ByteWidth = sizeof(XMFLOAT4X4); // バッファのサイズ
-	buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER; // バインドフラグ
-	Direct3D_GetDevice()->CreateBuffer(&buffer_desc, nullptr, &g_pVSConstantBufferworld);
+	bufferDesc.ByteWidth = sizeof(XMFLOAT4X4); // バッファのサイズ
+	bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER; // バインドフラグ
+	Direct3DGetDevice()->CreateBuffer(&bufferDesc, nullptr, &g_pVSConstantBufferworld);
 
 
 	// 事前コンパイル済みピクセルシェーダーの読み込み
-	std::ifstream ifs_ps("Resources/Shaders/PixelShader2d.cso", std::ios::binary);
-	if (!ifs_ps) {
+	std::ifstream ifsPs("Resources/Shaders/PixelShader2d.cso", std::ios::binary);
+	if (!ifsPs) {
 		MessageBox(nullptr, "ピクセルシェーダーの読み込みに失敗しました\n\nPixelShader2d.cso", "エラー", MB_OK);
 		return false;
 	}
 
-	ifs_ps.seekg(0, std::ios::end);
-	filesize = ifs_ps.tellg();
-	ifs_ps.seekg(0, std::ios::beg);
+	ifsPs.seekg(0, std::ios::end);
+	fileSize = ifsPs.tellg();
+	ifsPs.seekg(0, std::ios::beg);
 
-	unsigned char* psbinary_pointer = new unsigned char[filesize];
-	ifs_ps.read((char*)psbinary_pointer, filesize);
-	ifs_ps.close();
+	unsigned char* psBinaryPointer = new unsigned char[fileSize];
+	ifsPs.read((char*)psBinaryPointer, fileSize);
+	ifsPs.close();
 
 	// ピクセルシェーダーの作成
-	hr = Direct3D_GetDevice()->CreatePixelShader(psbinary_pointer, filesize, nullptr, &g_pPixelShader);
+	hr = Direct3DGetDevice()->CreatePixelShader(psBinaryPointer, fileSize, nullptr, &g_pPixelShader);
 
-	delete[] psbinary_pointer; // バイナリデータのバッファを解放
+	delete[] psBinaryPointer; // バイナリデータのバッファを解放
 
 	if (FAILED(hr)) {
-		hal::dout << "Shader2d_Initialize() : ピクセルシェーダーの作成に失敗しました" << std::endl;
+		dOst::dout << "Shader2d_Initialize() : ピクセルシェーダーの作成に失敗しました" << std::endl;
 		return false;
 	}
 
 	//// ピクセルシェーダー用定数バッファの作成
-	buffer_desc.ByteWidth = sizeof(XMFLOAT4); // バッファのサイズ
+	bufferDesc.ByteWidth = sizeof(XMFLOAT4); // バッファのサイズ
 	//buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER; // バインドフラグ
 
-	Direct3D_GetDevice()->CreateBuffer(&buffer_desc, nullptr, &g_pPSConstantBuffer);
+	Direct3DGetDevice()->CreateBuffer(&bufferDesc, nullptr, &g_pPSConstantBuffer);
 
 	// 通常スプライト用サンプラーステート設定
-	D3D11_SAMPLER_DESC sampler_desc{};
-	sampler_desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	sampler_desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	sampler_desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	sampler_desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-	sampler_desc.MipLODBias = 0;
-	sampler_desc.MaxAnisotropy = 16;
-	sampler_desc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-	sampler_desc.MinLOD = 0;
-	sampler_desc.MaxLOD = D3D11_FLOAT32_MAX;
+	D3D11_SAMPLER_DESC samplerDesc{};
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.MipLODBias = 0;
+	samplerDesc.MaxAnisotropy = 16;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	samplerDesc.MinLOD = 0;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-	Direct3D_GetDevice()->CreateSamplerState(&sampler_desc, &g_pSamplerStateLinear);
+	Direct3DGetDevice()->CreateSamplerState(&samplerDesc, &g_pSamplerStateLinear);
 
 	// UVスプライト用サンプラーステート設定
-	sampler_desc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-	sampler_desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	sampler_desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	sampler_desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-	sampler_desc.MipLODBias = 0;
-	sampler_desc.MaxAnisotropy = 16;
-	sampler_desc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-	sampler_desc.MinLOD = 0;
-	sampler_desc.MaxLOD = D3D11_FLOAT32_MAX;
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.MipLODBias = 0;
+	samplerDesc.MaxAnisotropy = 16;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	samplerDesc.MinLOD = 0;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-	Direct3D_GetDevice()->CreateSamplerState(&sampler_desc, &g_pSamplerStatePoint);
+	Direct3DGetDevice()->CreateSamplerState(&samplerDesc, &g_pSamplerStatePoint);
 
 	return true;
 }
 
-void Shader2D_Finalize()
+void Shader2DFinalize()
 {
 	SAFE_RELEASE(g_pPSConstantBuffer);
 	SAFE_RELEASE(g_pSamplerStatePoint);
@@ -164,7 +163,7 @@ void Shader2D_Finalize()
 	SAFE_RELEASE(g_pVertexShader);
 }
 
-void Shader2D_SetProjectionMatrix(const DirectX::XMMATRIX& matrix)
+void Shader2DSetProjectionMatrix(const DirectX::XMMATRIX& matrix)
 {
 	// 定数バッファ格納用行列の構造体を定義
 	XMFLOAT4X4 transpose;
@@ -173,10 +172,10 @@ void Shader2D_SetProjectionMatrix(const DirectX::XMMATRIX& matrix)
 	XMStoreFloat4x4(&transpose, XMMatrixTranspose(matrix));
 
 	// 定数バッファに行列をセット
-	Direct3D_GetDeviceContext()->UpdateSubresource(g_pVSConstantBufferproj, 0, nullptr, &transpose, 0, 0);
+	Direct3DGetDeviceContext()->UpdateSubresource(g_pVSConstantBufferproj, 0, nullptr, &transpose, 0, 0);
 }
 
-void Shader2D_SetWorldMatrix(const DirectX::XMMATRIX& matrix)
+void Shader2DSetWorldMatrix(const DirectX::XMMATRIX& matrix)
 {
 	// 定数バッファ格納用行列の構造体を定義
 	XMFLOAT4X4 transpose;
@@ -185,47 +184,47 @@ void Shader2D_SetWorldMatrix(const DirectX::XMMATRIX& matrix)
 	XMStoreFloat4x4(&transpose, XMMatrixTranspose(matrix));
 
 	// 定数バッファに行列をセット
-	Direct3D_GetDeviceContext()->UpdateSubresource(g_pVSConstantBufferworld, 0, nullptr, &transpose, 0, 0);
+	Direct3DGetDeviceContext()->UpdateSubresource(g_pVSConstantBufferworld, 0, nullptr, &transpose, 0, 0);
 }
 
-void Shader2D_SetColor(const DirectX::XMFLOAT4& color)
+void Shader2DSetColor(const DirectX::XMFLOAT4& color)
 {
 	// 定数バッファに色をセット
-	Direct3D_GetDeviceContext()->UpdateSubresource(g_pPSConstantBuffer, 0, nullptr, &color, 0, 0);
+	Direct3DGetDeviceContext()->UpdateSubresource(g_pPSConstantBuffer, 0, nullptr, &color, 0, 0);
 }
 
-void Shader2D_BeginLinear()
+void Shader2DBeginLinear()
 {
 	// 頂点シェーダーとピクセルシェーダーを描画パイプラインに設定
-	Direct3D_GetDeviceContext()->VSSetShader(g_pVertexShader, nullptr, 0);
-	Direct3D_GetDeviceContext()->PSSetShader(g_pPixelShader, nullptr, 0);
+	Direct3DGetDeviceContext()->VSSetShader(g_pVertexShader, nullptr, 0);
+	Direct3DGetDeviceContext()->PSSetShader(g_pPixelShader, nullptr, 0);
 
 	// 頂点レイアウトを描画パイプラインに設定
-	Direct3D_GetDeviceContext()->IASetInputLayout(g_pInputLayout);
+	Direct3DGetDeviceContext()->IASetInputLayout(g_pInputLayout);
 
 	// 定数バッファを描画パイプラインに設定
-	Direct3D_GetDeviceContext()->VSSetConstantBuffers(0, 1, &g_pVSConstantBufferproj);
-	Direct3D_GetDeviceContext()->VSSetConstantBuffers(1, 1, &g_pVSConstantBufferworld);
-	Direct3D_GetDeviceContext()->PSSetConstantBuffers(0, 1, &g_pPSConstantBuffer);
+	Direct3DGetDeviceContext()->VSSetConstantBuffers(0, 1, &g_pVSConstantBufferproj);
+	Direct3DGetDeviceContext()->VSSetConstantBuffers(1, 1, &g_pVSConstantBufferworld);
+	Direct3DGetDeviceContext()->PSSetConstantBuffers(0, 1, &g_pPSConstantBuffer);
 
 	// サンプラーステートを描画パイプラインに設定
-	Direct3D_GetDeviceContext()->PSSetSamplers(0, 1, &g_pSamplerStateLinear);
+	Direct3DGetDeviceContext()->PSSetSamplers(0, 1, &g_pSamplerStateLinear);
 }
 
-void Shader2D_BeginPoint()
+void Shader2DBeginPoint()
 {
 	// 頂点シェーダーとピクセルシェーダーを描画パイプラインに設定
-	Direct3D_GetDeviceContext()->VSSetShader(g_pVertexShader, nullptr, 0);
-	Direct3D_GetDeviceContext()->PSSetShader(g_pPixelShader, nullptr, 0);
+	Direct3DGetDeviceContext()->VSSetShader(g_pVertexShader, nullptr, 0);
+	Direct3DGetDeviceContext()->PSSetShader(g_pPixelShader, nullptr, 0);
 
 	// 頂点レイアウトを描画パイプラインに設定
-	Direct3D_GetDeviceContext()->IASetInputLayout(g_pInputLayout);
+	Direct3DGetDeviceContext()->IASetInputLayout(g_pInputLayout);
 
 	// 定数バッファを描画パイプラインに設定
-	Direct3D_GetDeviceContext()->VSSetConstantBuffers(0, 1, &g_pVSConstantBufferproj);
-	Direct3D_GetDeviceContext()->VSSetConstantBuffers(1, 1, &g_pVSConstantBufferworld);
-	Direct3D_GetDeviceContext()->PSSetConstantBuffers(0, 1, &g_pPSConstantBuffer);
+	Direct3DGetDeviceContext()->VSSetConstantBuffers(0, 1, &g_pVSConstantBufferproj);
+	Direct3DGetDeviceContext()->VSSetConstantBuffers(1, 1, &g_pVSConstantBufferworld);
+	Direct3DGetDeviceContext()->PSSetConstantBuffers(0, 1, &g_pPSConstantBuffer);
 
 	// サンプラーステートを描画パイプラインに設定
-	Direct3D_GetDeviceContext()->PSSetSamplers(0, 1, &g_pSamplerStatePoint);
+	Direct3DGetDeviceContext()->PSSetSamplers(0, 1, &g_pSamplerStatePoint);
 }

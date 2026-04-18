@@ -1,6 +1,6 @@
 /*＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 * 
-*	debug ostream[debug ostream.h]
+*	デバッグログ表示[debug ostream.h]
 * 
 * 　作成者 : Asuka Kuroda
 * 　作成日 : 2025/4/25
@@ -13,13 +13,13 @@
 #include <Windows.h>
 #include <sstream>
 
-namespace hal
+namespace dOst
 {
-	class debugbuf : public	std::basic_stringbuf < char, std::char_traits<char>>
+	class DebugBuf : public	std::basic_stringbuf < char, std::char_traits<char>>
 {
 public:
 
-	virtual ~debugbuf() {
+	virtual ~DebugBuf() {
 		sync();
 	}
 
@@ -32,13 +32,13 @@ protected:
 	}
 };
 
-class debug_ostream : public std::basic_ostream<char, std::char_traits<char>>
+class DebugOstream : public std::basic_ostream<char, std::char_traits<char>>
 {
 public:
-	debug_ostream() : std::basic_ostream<char,std::char_traits<char>>(new debugbuf()){}
-	~debug_ostream() { delete rdbuf(); }
+	DebugOstream() : std::basic_ostream<char,std::char_traits<char>>(new DebugBuf()){}
+	~DebugOstream() { delete rdbuf(); }
 };
-extern debug_ostream dout;
+extern DebugOstream dout;
 }
 
 #endif // DEBUG_OSTREAM_H

@@ -8,72 +8,81 @@
 *
 ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝*/
 #include "fade.h"
+#include "main.h"
 #include "sprite.h"
 #include "texture.h"
 #include "direct3d.h"
 
-static FadeState g_FadeState = FADE_STATE_FADE_IN;
+#include "debug_memoryleak.h"
+
+static FadeState g_FadeState = FADE_IN;
 static double g_FadeTime;
 static double g_Accumulatedtime = 0.0;
 static double g_FadeStartTime = 0.0;
 static XMFLOAT4 g_FadeColor = { 0.0f, 0.0f, 0.0f, 1.0f };
 static int g_FadeTexID = -1;
 
-void Fade_Initialize()
+Texture* g_FadeTexture{ nullptr };
+
+void FadeInitialize()
 {
-	g_FadeState = FADE_STATE_FADE_IN;
+	g_FadeState = FADE_IN;
 	g_Accumulatedtime = 0.0;
 
-	g_FadeTexID = Texture_Load(L"Resources/Texture/Common/white.png");
+	//g_FadeTexID = TextureLoad(L"Resources/Texture/Common/white.png");
+	g_FadeTexture = new Texture(L"Resources/Texture/Common/white.png");
 }
 
-void Fade_Finalize()
+void FadeFinalize()
 {
+	delete g_FadeTexture;
 }
 
-void Fade_Update(double elapsed_time)
+void FadeUpdate(double elapsedTime)
 {
 	// 時間計測とステートの管理
-	if (g_FadeState == FADE_STATE_NONE || g_FadeState == FADE_STATE_FADE_OUT_END || g_FadeState == FADE_STATE_FADE_IN_END) {
+	if (g_FadeState == NONE || g_FadeState == FADE_OUT_END || g_FadeState == FADE_IN_END) {
 		return;
 	}
 
-	g_Accumulatedtime += elapsed_time;
+	g_Accumulatedtime += elapsedTime;
 
-	double lifetime = g_Accumulatedtime - g_FadeStartTime;
+	double lifeTime = g_Accumulatedtime - g_FadeStartTime;
 
-	float alpha = (float)(lifetime / g_FadeTime);
+	float alpha = (float)(lifeTime / g_FadeTime);
 
-	g_FadeColor.w = g_FadeState == FADE_STATE_FADE_IN ? 1.0f - alpha : alpha;
+	g_FadeColor.w = g_FadeState == FADE_IN ? 1.0f - alpha : alpha;
 
-	if (g_FadeTime <= lifetime) {
-		g_FadeState = g_FadeState == FADE_STATE_FADE_IN ? FADE_STATE_FADE_IN_END : FADE_STATE_FADE_OUT_END;
+	if (g_FadeTime <= lifeTime) {
+		g_FadeState = g_FadeState == FADE_IN ? FADE_IN_END : FADE_OUT_END;
 	}
 }
 
-void Fade_Draw()
+void FadeDraw()
 {
-	if (g_FadeState == FADE_STATE_NONE || g_FadeState == FADE_STATE_FADE_IN_END) {
+	if (g_FadeState == NONE || g_FadeState == FADE_IN_END) {
 		return;
 	}
 
-	Sprite_Draw({ 0.0f, 0.0f },
-		{ static_cast<float>(Direct3D_GetBackBufferWidth()),
-		static_cast<float>(Direct3D_GetBackBufferHeight()) },
-		g_FadeTexID,g_FadeColor);
+	//SpriteDraw(g_FadeTexID, { 0.0f, 0.0f },
+	//	{ static_cast<float>(Direct3DGetBackBufferWidth()),
+	//	static_cast<float>(Direct3DGetBackBufferHeight()) },
+	//	g_FadeColor);
+
+	g_FadeTexture->Draw({ 0.0f, 0.0f }, { SCREEN_WIDTH, SCREEN_HEIGHT }, g_FadeColor);
 }
 
-void Fade_Start(double fade_time, bool isfadein, XMFLOAT4 fade_color)
+void FadeStart(double fadeTime, bool isFadeIn, XMFLOAT4 fadeColor)
 {
-	g_FadeTime = fade_time;
-	g_FadeState = isfadein ? FADE_STATE_FADE_IN : FADE_STATE_FADE_OUT;
+	g_FadeTime = fadeTime;
+	g_FadeState = isFadeIn ? FADE_IN : FADE_OUT;
 
 	g_FadeStartTime = g_Accumulatedtime;
 
-	g_FadeColor = fade_color;
+	g_FadeColor = fadeColor;
 }
 
-const FadeState Fade_GetState()
+const FadeState GetFadeState()
 {
 	return g_FadeState;
 }

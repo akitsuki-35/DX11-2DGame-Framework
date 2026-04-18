@@ -13,53 +13,31 @@
 #include <d3d11.h>
 #include <DirectXMath.h>
 
-class AnimPattern
+class SpriteSheet;
+
+class Animation
 {
 private:
-	int m_texid{};
-	unsigned int m_patternmax{};
-	unsigned int m_horizontalpatternmax{};
-	double m_per_second{};
-	DirectX::XMUINT2 m_startpos{};
-	DirectX::XMUINT2 m_patternsize{};
-	bool m_loopflg{ true };
+	SpriteSheet* pSpriteSheet;
+	int patternNum{ 0 };
+	DirectX::XMUINT2 startPos{};
+	double perSecond{};
+	double accumulatedTime{ 0.0f };
+	bool isLoop{ true };
+	bool isStoped{ false };
 
 public:
-	AnimPattern() = delete;
-	AnimPattern(int texid, int patternmax, int horizontalpatternmax, double per_second,
-		DirectX::XMUINT2 startpos, DirectX::XMUINT2 patternsize, bool loopflg = true)
-		:m_texid(texid), m_patternmax(patternmax), m_horizontalpatternmax(horizontalpatternmax), 
-		m_per_second(per_second), m_startpos(startpos), m_patternsize(patternsize), 
-		m_loopflg(loopflg)
-	{}
+	Animation(SpriteSheet* pSpriteSheet, DirectX::XMUINT2 startPos, double perSecond, bool isLoop = true)
+		: pSpriteSheet(pSpriteSheet), startPos(startPos), perSecond(perSecond), isLoop(isLoop) {}
 
-	int GetPatternMax() { return m_patternmax; }
-	double GetPerSecond() { return m_per_second; }
-	bool LoopFlg() { return m_loopflg; }
+	void Update(double elapsedTime);
+	void Draw(const DirectX::XMFLOAT2& position, const DirectX::XMFLOAT2& size,
+		const DirectX::XMFLOAT4& color = { 1.0f,1.0f,1.0f,1.0f }) const;
+	void Draw(const DirectX::XMFLOAT2& position, const float& size = 1.0f,
+		const DirectX::XMFLOAT4& color = { 1.0f,1.0f,1.0f,1.0f }) const;
 
-	void Draw(DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size, int pattern_num,
-		DirectX::XMFLOAT4 color = { 1.0f,1.0f,1.0f,1.0f }) const;
-};
-
-class AnimPlayer
-{
-private:
-	int m_pattern{ 0 };
-	double m_accumulatedtime{ 0.0f };
-	AnimPattern* m_pAnimpattern{ nullptr };
-	bool m_is_stoped{ false };
-
-public:
-	AnimPlayer() = delete;
-	AnimPlayer(AnimPattern* pAnimpattern)
-		: m_pAnimpattern(pAnimpattern) {
-	}
-
-	void Update(double elapsed_time);
-	void Draw(DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size,
-		DirectX::XMFLOAT4 color = { 1.0f,1.0f,1.0f,1.0f }) const;
-
-	bool IsAnimStoped() const { return m_is_stoped; }
+	bool IsLoop() { return isLoop; }
+	bool IsStoped() const { return isStoped; }
 };
 
 #endif // ANIMATION_H

@@ -1,11 +1,12 @@
-/*==============================================================================
-
-   Direct3D11用 デバックテキスト表示 [debug_text.h]
-														 Author : Youhei Sato
-														 Date   : 2025/06/15
---------------------------------------------------------------------------------
-
-==============================================================================*/
+/*＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+*
+*	デバッグテキスト表示[debug_text.h]
+*
+* 　Author  : Asuka Kuroda
+* 　Date	: 2026/04/13
+* ----------------------------------------------------------------------------------------------------------
+*	DirectX11で動作
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝*/
 #ifndef DEBUG_TEXT_H
 #define DEBUG_TEXT_H
 
@@ -17,8 +18,7 @@
 #include <wrl/client.h> // Microsoft::WRL::ComPtrを使用する場合は必要
 #include <DirectXMath.h>
 
-
-namespace hal
+namespace dText
 {
 	class DebugText
 	{
@@ -34,9 +34,9 @@ namespace hal
 		float m_LineSpacing{ 0.0f }; // 行間隔
 		float m_CharacterSpacing{ 0.0f }; // 文字間隔
 
-		struct Characters { 
+		struct Characters {
 			Characters(const DirectX::XMFLOAT4& color) : color(color) {}
-			std::string characters; 
+			std::string characters;
 			DirectX::XMFLOAT4 color{ 1.0f, 1.0f, 1.0f, 1.0f };
 		};
 
@@ -86,7 +86,7 @@ namespace hal
 		void Clear(); // 登録されているテキストをクリア
 
 	private:
-		
+
 		struct Vertex
 		{
 			DirectX::XMFLOAT3 position; // 座標
@@ -97,4 +97,5 @@ namespace hal
 		void createBuffer(ULONG characterCount);
 	};
 }
+
 #endif // DEBUG_TEXT_H

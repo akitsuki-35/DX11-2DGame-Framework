@@ -12,14 +12,14 @@
 
 #include <DirectXMath.h>
 
-bool Shader2D_Initialize();
-void Shader2D_Finalize();
+bool Shader2DInitialize();
+void Shader2DFinalize();
 
-void Shader2D_SetProjectionMatrix(const DirectX::XMMATRIX& matrix);
-void Shader2D_SetWorldMatrix(const DirectX::XMMATRIX& matrix);
-void Shader2D_SetColor(const DirectX::XMFLOAT4& color);
+void Shader2DSetProjectionMatrix(const DirectX::XMMATRIX& matrix);
+void Shader2DSetWorldMatrix(const DirectX::XMMATRIX& matrix);
+void Shader2DSetColor(const DirectX::XMFLOAT4& color);
 
-void Shader2D_BeginLinear();
-void Shader2D_BeginPoint();
+void Shader2DBeginLinear();
+void Shader2DBeginPoint();
 
 #endif // SHADER_H

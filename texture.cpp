@@ -1,141 +1,100 @@
-/*==============================================================================
-
-   テクスチャの管理 [texture.cpp]
-														 Author : Asuka Kuroda
-														 Date   : 2025/06/06
---------------------------------------------------------------------------------
-
-==============================================================================*/
+/*＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+*
+*	テクスチャ管理[texture.cpp]
+*
+* 　Author  : Asuka Kuroda
+* 　Date	: 2026/04/13
+* ----------------------------------------------------------------------------------------------------------
+*
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝*/
 #include "texture.h"
+#include "sprite.h"
 #include "direct3d.h"
 using namespace DirectX;
 #include <string>
 #include <DirectXTex.h>
 
-static constexpr int TEXTURE_MAX = 1024;
-
-struct Texture
+Texture::Texture(const wchar_t* pFileName, bool isMipMap)
+	: fileName(pFileName)
 {
-	std::wstring filename{};
-	unsigned int width{};
-	unsigned int height{};
-	ID3D11ShaderResourceView* pTexture = nullptr;
-};
+	//テクスチャからのファイルの読み込み
+	TexMetadata metaData;
+	ScratchImage image;
 
-static Texture g_Textures[TEXTURE_MAX]{};
-unsigned int lasttexture{};
+	//画像ファイルの読み込み
+	LoadFromWICFile(pFileName, WIC_FLAGS_NONE, &metaData, image);
 
-// 注意！初期化で外部から設定されるもの。Release不要。
-static ID3D11Device* g_pDevice = nullptr;
-static ID3D11DeviceContext* g_pContext = nullptr;
+	//画像ファイルのサイズを取得
+	imageSize.x = static_cast<unsigned int>(metaData.width);
+	imageSize.y = static_cast<unsigned int>(metaData.height);
 
-void Texture_Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-{
-	// デバイスとデバイスコンテキストの保存
-	g_pDevice = pDevice;
-	g_pContext = pContext;
-}
-
-void Texture_Finalize()
-{
-	Texture_AllRelease();
-}
-
-int Texture_Load(const wchar_t* pFileName, bool bMipMap)
-{
-	//読み込み済みのファイル対応
-	for (int i = 0; i < TEXTURE_MAX; i++)
+	if (isMipMap)
 	{
-		if (!g_Textures[i].pTexture)
-		{
-			continue;
-		}
-
-		if (g_Textures[i].filename == pFileName)
-		{
-			return i;
-		}
+		//ミップマップを作成する
+		ScratchImage mipChain;
+		GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), TEX_FILTER_DEFAULT, 0, mipChain);
+		image = std::move(mipChain);
+		metaData = image.GetMetadata();
 	}
 
-	//管理処理
-	for (int i = 0; i < TEXTURE_MAX; i++)
+	//シェーダーリソースビューの生成
+	HRESULT hr = CreateShaderResourceView(Direct3DGetDevice(), image.GetImages(), image.GetImageCount(), metaData, &pTexture);
+
+	if (FAILED(hr))
 	{
-		// 空いている場所を探す
-		if (g_Textures[i].pTexture)
-		{
-			continue;
-		}
-
-		//テクスチャからのファイルの読み込み
-		TexMetadata metadata;
-		ScratchImage image;
-
-		//画像ファイルの読み込み
-		LoadFromWICFile(pFileName, WIC_FLAGS_NONE, &metadata, image);
-		
-		//画像ファイルのサイズを取得
-		g_Textures[i].width = (unsigned int)metadata.width;
-		g_Textures[i].height = (unsigned int)metadata.height;
-
-		if (bMipMap)
-		{
-			//ミップマップを作成する
-			ScratchImage mipChain;
-			GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), TEX_FILTER_DEFAULT, 0, mipChain);
-			image = std::move(mipChain);
-			metadata = image.GetMetadata();
-		}
-
-		//シェーダーリソースビューの生成
-		HRESULT hr = CreateShaderResourceView(g_pDevice, image.GetImages(), image.GetImageCount(), metadata, &g_Textures[i].pTexture);
-
-		if (FAILED(hr))
-		{
-			MessageBox(nullptr, "テクスチャの読み込みに失敗しました", "エラー", MB_OK);
-			break;
-		}
-
-		//ファイル名を保存
-		g_Textures[i].filename = pFileName;
-
-		return i;
-	}
-
-	return -1;
-}
-
-void Texture_AllRelease()
-{
-	for (Texture& t : g_Textures)
-	{
-		SAFE_RELEASE(t.pTexture);
-	}
-}
-
-void Texture_SetTexture(int texture_id)
-{
-	if (texture_id < 0)
-	{
+		MessageBox(nullptr, "テクスチャの読み込みに失敗しました", "エラー", MB_OK);
 		return;
 	}
 
+	//ファイル名を保存
+	fileName = pFileName;
+}
+
+Texture::~Texture()
+{
+	SAFE_RELEASE(pTexture);
+}
+
+void Texture::Draw(const DirectX::XMFLOAT2& position, const DirectX::XMFLOAT2& size, const DirectX::XMFLOAT4& color)
+{
+	SpriteDraw(this, position, size, color);
+}
+
+void Texture::Draw(const DirectX::XMFLOAT2& position, const float& size, const DirectX::XMFLOAT4& color)
+{
+	SpriteDraw(this, position, size, color);
+}
+
+void Texture::SetTexture()
+{
 	// テクスチャ設定
-	g_pContext->PSSetShaderResources(0, 1, &g_Textures[texture_id].pTexture);
-	
-	//lasttexture = g_Textures[texture_id].pTexture;
+	Direct3DGetDeviceContext()->PSSetShaderResources(0, 1, &pTexture);
 }
 
-DirectX::XMUINT2 Texture_GetSize(int texture_id)
+SpriteSheet::SpriteSheet(const wchar_t* pFileName, const DirectX::XMUINT2& patternMatrix, bool isMipMap)
+	: Texture(pFileName, isMipMap), patternMatrix(patternMatrix)
 {
-	return { g_Textures[texture_id].width,g_Textures[texture_id].height };
+	patternMax = patternMatrix.x * patternMatrix.y;
+	patternSize.x = imageSize.x / patternMatrix.x;
+	patternSize.y = imageSize.y / patternMatrix.y;
 }
 
-const unsigned int& Texture_GetWidth(int texture_id)
+void SpriteSheet::Draw(const DirectX::XMFLOAT2& position, const DirectX::XMUINT2& patternNum, const DirectX::XMFLOAT2& size, const DirectX::XMFLOAT4& color)
 {
-	return g_Textures[texture_id].width;
+	SpriteDraw(this, position, patternNum, size, color);
 }
 
-const unsigned int& Texture_GetHeight(int texture_id)
+void SpriteSheet::Draw(const DirectX::XMFLOAT2& position, const DirectX::XMUINT2& patternNum, const float& size, const DirectX::XMFLOAT4& color)
 {
-	return g_Textures[texture_id].height;
+	SpriteDraw(this, position, patternNum, size, color);
+}
+
+void SpriteSheet::Draw(const DirectX::XMFLOAT2& position, const int& patternNum, const DirectX::XMFLOAT2& size, const DirectX::XMFLOAT4& color)
+{
+	SpriteDraw(this, position, patternNum, size, color);
+}
+
+void SpriteSheet::Draw(const DirectX::XMFLOAT2& position, const int& patternNum, const float& size, const DirectX::XMFLOAT4& color)
+{
+	SpriteDraw(this, position, patternNum, size, color);
 }

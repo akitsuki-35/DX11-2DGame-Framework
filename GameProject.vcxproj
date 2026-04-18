@@ -33,7 +33,7 @@
     <ClCompile Include="shader2d.cpp" />
     <ClCompile Include="sprite.cpp" />
     <ClCompile Include="animation.cpp" />
-    <ClCompile Include="system_timer.cpp" />
+    <ClCompile Include="systemtimer.cpp" />
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="title.cpp" />
     <ClCompile Include="WICTextureLoader11.cpp" />
@@ -53,7 +53,7 @@
     <ClInclude Include="shader2d.h" />
     <ClInclude Include="sprite.h" />
     <ClInclude Include="animation.h" />
-    <ClInclude Include="system_timer.h" />
+    <ClInclude Include="systemtimer.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="title.h" />
     <ClInclude Include="WICTextureLoader11.h" />
@@ -183,7 +183,7 @@
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <TreatWarningAsError>true</TreatWarningAsError>
+      <TreatWarningAsError>false</TreatWarningAsError>
       <AdditionalIncludeDirectories>$(ProjectDir)include\DirectXTex;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>

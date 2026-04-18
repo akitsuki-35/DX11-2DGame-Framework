@@ -22,58 +22,58 @@ static double g_KeyInputTime{};
 
 enum TitleState
 {
-	TITLE_STATE_FADE_IN,
-	TITLE_STATE_KEYINPUT_WAIT,
-	TITLE_STATE_KEYINPUT_ACTION,
-	TITLE_STATE_FADE_OUT
+	TITLE_FADE_IN,
+	TITLE_KEYINPUT_WAIT,
+	TITLE_KEYINPUT_ACTION,
+	TITLE_FADE_OUT
 };
 
-static TitleState g_State = TITLE_STATE_FADE_IN;
+static TitleState g_State = TITLE_FADE_IN;
 
-void Title_Initialize()
+void TitleInitialize()
 {
-	Fade_Start(1.0f, true);
+	FadeStart(1.0f, true);
 
-	g_State = TITLE_STATE_FADE_IN;
+	g_State = TITLE_FADE_IN;
 }
 
-void Title_Finalize()
+void TitleFinalize()
 {
 }
 
-void Title_Update(double elapsed_time)
+void TitleUpdate(double elapsed_time)
 {
 	g_Accumulatedtime += elapsed_time;
 
 	switch (g_State)
 	{
-	case TITLE_STATE_FADE_IN:
-		if (Fade_GetState() == FADE_STATE_FADE_IN_END) {
-			g_State = TITLE_STATE_KEYINPUT_WAIT;
+	case TITLE_FADE_IN:
+		if (GetFadeState() == FADE_IN_END) {
+			g_State = TITLE_KEYINPUT_WAIT;
 		}
 		break;
 
-	case TITLE_STATE_KEYINPUT_WAIT:
-		if (KeyLogger_IsTrigger(KK_ENTER))
+	case TITLE_KEYINPUT_WAIT:
+		if (KeyIsTrigger(KK_ENTER))
 		{
-			g_State = TITLE_STATE_KEYINPUT_ACTION;
+			g_State = TITLE_KEYINPUT_ACTION;
 			g_KeyInputTime = g_Accumulatedtime;
 			//サウンド再生
 			
 		}
 		break;
 
-	case TITLE_STATE_KEYINPUT_ACTION:
+	case TITLE_KEYINPUT_ACTION:
 		if (g_Accumulatedtime - g_KeyInputTime > 1.0){
-			g_State = TITLE_STATE_FADE_OUT;
-			Fade_Start(1.0f, false);
+			g_State = TITLE_FADE_OUT;
+			FadeStart(1.0f, false);
 		}
 		break;
 
-	case TITLE_STATE_FADE_OUT:
-		if (Fade_GetState() == FADE_STATE_FADE_OUT_END) {
+	case TITLE_FADE_OUT:
+		if (GetFadeState() == FADE_OUT_END) {
 			// ゲームシーンに遷移
-			Scene_SetNextScene(SCENE_GAME);
+			SetNextScene(SCENE_GAME);
 		}
 		break;
 
@@ -82,9 +82,9 @@ void Title_Update(double elapsed_time)
 	}
 }
 
-void Title_Draw()
+void TitleDraw()
 {
-	if (g_State != TITLE_STATE_FADE_IN) {
+	if (g_State != TITLE_FADE_IN) {
 		//float alpha = static_cast<float>((sin(g_Accumulatedtime)+ 1.0f)) * 0.5f;
 
 	}

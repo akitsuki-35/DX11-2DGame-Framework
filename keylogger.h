@@ -12,11 +12,11 @@
 
 #include "keyboard.h"
 
-void KeyLogger_Initialize();
-void KeyLogger_Update();
+void KeyLoggerInitialize();
+void KeyLoggerUpdate();
 
-bool KeyLogger_IsPressd(Keyboard_Keys key);
-bool KeyLogger_IsTrigger(Keyboard_Keys key);
-bool KeyLogger_IsRelease(Keyboard_Keys key);
+bool KeyIsPressd(Keys key);
+bool KeyIsTrigger(Keys key);
+bool KeyIsRelease(Keys key);
 
 #endif // KEYLOGGER_H

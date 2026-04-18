@@ -15,20 +15,20 @@ using namespace::DirectX;
 
 enum FadeState
 {
-	FADE_STATE_NONE,
-	FADE_STATE_FADE_OUT,
-	FADE_STATE_FADE_OUT_END,
-	FADE_STATE_FADE_IN,
-	FADE_STATE_FADE_IN_END
+	NONE,
+	FADE_OUT,
+	FADE_OUT_END,
+	FADE_IN,
+	FADE_IN_END
 };
 
-void Fade_Initialize();
-void Fade_Finalize();
-void Fade_Update(double elapsed_time);
-void Fade_Draw();
+void FadeInitialize();
+void FadeFinalize();
+void FadeUpdate(double elapsedTime);
+void FadeDraw();
 
-void Fade_Start(double fade_time, bool isfadein, XMFLOAT4 fade_color = { 0.0f,0.0f,0.0f,1.0f });
+void FadeStart(double fadeTime, bool isFadeIn, XMFLOAT4 fadeColor = { 0.0f,0.0f,0.0f,1.0f });
 
-const FadeState Fade_GetState();
+const FadeState GetFadeState();
 
 #endif // !FADE_H
