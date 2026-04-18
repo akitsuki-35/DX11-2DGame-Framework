@@ -123,7 +123,6 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 		}
 		else
 		{
-			TextureInitialize(Direct3DGetDevice(), Direct3DGetDeviceContext());
 			SpriteInitialize();
 		}
 	}
@@ -211,7 +210,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 	SceneFinalize();
 	FadeFinalize();
 	SpriteFinalize();
-	TextureFinalize();
+	//TextureFinalize();
 	Shader2DFinalize();
 	Direct3DFinalize();
 	MouseFinalize();

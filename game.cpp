@@ -18,33 +18,35 @@
 
 #include "debug_memoryleak.h"
 
-int g_background{};
-int g_RunningMan{};
-AnimationPattern* g_pRun{ nullptr };
-Animation* g_pAnim{ nullptr };
+Texture* g_BackGround{ nullptr };
+SpriteSheet* g_RunningMan{ nullptr };
+Animation* g_Animation{ nullptr };
 
 void GameInitialize()
 {
 	FadeStart(1.0, true);
-	g_background = TextureLoad(L"Resources/Texture/background1.jpg");
-	g_RunningMan = TextureLoad(L"Resources/Texture/runningman001.png");
-	g_pRun = new AnimationPattern(g_RunningMan, 10, 5, 0.05, { 0, 0 }, { 140, 200 });
-	g_pAnim = new Animation(g_pRun);
+
+	g_BackGround = new Texture(L"Resources/Texture/background1.jpg");
+	g_RunningMan = new SpriteSheet(L"Resources/Texture/runningman001.png", { 5, 2 });
+	g_Animation = new Animation(g_RunningMan, { 0, 0 }, 0.05);
 }
 
 void GameFinalize()
 {
-
+	delete g_Animation;
+	delete g_RunningMan;
+	delete g_BackGround;
 }
 
 void GameUpdate(double elapsedTime)
 {
-	g_pAnim->Update(elapsedTime);
+	g_Animation->Update(elapsedTime);
 }
 
 void GameDraw()
 {
-	SpriteDraw(g_background, { 0.0f, 0.0f }, { 1280.0f , 720.0f });
-	SpriteDrawUV(g_RunningMan, { 64.0f, 64.0f }, { 140.0f, 200.0f },{ 4, 0 }, { 5, 2 });
-	g_pAnim->Draw({ 128.0f, 128.0f }, { 140.0f, 200.0f });
+	g_BackGround->Draw({ 0.0f, 0.0f });
+	g_RunningMan->Draw({ 64.0f, 64.0f }, { 1, 0 }, { 140, 200 });
+	//g_RunningMan->Draw({ 64.0f, 64.0f }, { 0, 1 });
+	g_Animation->Draw({500.0f, 500.0f});
 }

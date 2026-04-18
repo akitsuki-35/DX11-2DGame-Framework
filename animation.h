@@ -13,53 +13,31 @@
 #include <d3d11.h>
 #include <DirectXMath.h>
 
-class AnimationPattern
-{
-private:
-	int texId{};
-	unsigned int patternMax{};
-	unsigned int horizontalPatternMax{};
-	double perSecond{};
-	DirectX::XMUINT2 startPos{};
-	DirectX::XMUINT2 patternSize{};
-	bool loopFlg{ true };
-
-public:
-	AnimationPattern() = delete;
-	AnimationPattern(int texId, int patternMax, int horizontalPatternMax, double perSecond,
-		DirectX::XMUINT2 startPos, DirectX::XMUINT2 patternSize, bool loopFlg = true) :
-		 texId(texId), patternMax(patternMax), horizontalPatternMax(horizontalPatternMax), 
-		perSecond(perSecond), startPos(startPos), patternSize(patternSize), 
-		loopFlg(loopFlg)
-	{}
-
-	int GetPatternMax() { return patternMax; }
-	double GetPerSecond() { return perSecond; }
-	bool LoopFlg() { return loopFlg; }
-
-	void Draw(DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size, int patternNum,
-		DirectX::XMFLOAT4 color = { 1.0f,1.0f,1.0f,1.0f }) const;
-};
+class SpriteSheet;
 
 class Animation
 {
 private:
-	int pattern{ 0 };
+	SpriteSheet* pSpriteSheet;
+	int patternNum{ 0 };
+	DirectX::XMUINT2 startPos{};
+	double perSecond{};
 	double accumulatedTime{ 0.0f };
-	AnimationPattern* pAnimPattern{ nullptr };
+	bool isLoop{ true };
 	bool isStoped{ false };
 
 public:
-	Animation() = delete;
-	Animation(AnimationPattern* pAnimPattern)
-		: pAnimPattern(pAnimPattern) {
-	}
+	Animation(SpriteSheet* pSpriteSheet, DirectX::XMUINT2 startPos, double perSecond, bool isLoop = true)
+		: pSpriteSheet(pSpriteSheet), startPos(startPos), perSecond(perSecond), isLoop(isLoop) {}
 
 	void Update(double elapsedTime);
-	void Draw(DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size,
-		DirectX::XMFLOAT4 color = { 1.0f,1.0f,1.0f,1.0f }) const;
+	void Draw(const DirectX::XMFLOAT2& position, const DirectX::XMFLOAT2& size,
+		const DirectX::XMFLOAT4& color = { 1.0f,1.0f,1.0f,1.0f }) const;
+	void Draw(const DirectX::XMFLOAT2& position, const float& size = 1.0f,
+		const DirectX::XMFLOAT4& color = { 1.0f,1.0f,1.0f,1.0f }) const;
 
-	bool IsAnimStoped() const { return isStoped; }
+	bool IsLoop() { return isLoop; }
+	bool IsStoped() const { return isStoped; }
 };
 
 #endif // ANIMATION_H

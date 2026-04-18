@@ -49,14 +49,17 @@ void SpriteFinalize()
 	SAFE_RELEASE(g_pVertexBuffer);
 }
 
+/*＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+	通常スプライト描画関数
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝*/
 /*----------------------------------------------------------------------------------------------------------
-	通常スプライト描画（サイズ直接指定）
+	数値で直接描画サイズ指定
 
 	引数：テクスチャID, 左上座標, サイズ, カラー
 ----------------------------------------------------------------------------------------------------------*/
-void SpriteDraw(int texId, DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size, const DirectX::XMFLOAT4 color)
+void SpriteDraw(Texture* pTexture, const DirectX::XMFLOAT2& position, const DirectX::XMFLOAT2& size, const DirectX::XMFLOAT4& color)
 {
-	SetTexture(texId);
+	pTexture->SetTexture();
 
 	// シェーダーを描画パイプラインに設定
 	Shader2DBeginLinear();
@@ -111,13 +114,13 @@ void SpriteDraw(int texId, DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size, c
 }
 
 /*----------------------------------------------------------------------------------------------------------
-	通常スプライト描画（拡大率でサイズ指定）
+	拡大率で描画サイズ指定
 
 	引数：テクスチャID, 左上座標, 拡大率, カラー
 ----------------------------------------------------------------------------------------------------------*/
-void SpriteDraw(int texId, DirectX::XMFLOAT2 position, float size, const DirectX::XMFLOAT4 color)
+void SpriteDraw(Texture* pTexture, const DirectX::XMFLOAT2& position, const float& size, const DirectX::XMFLOAT4& color)
 {
-	SetTexture(texId);
+	pTexture->SetTexture();
 
 	// シェーダーを描画パイプラインに設定
 	Shader2DBeginLinear();
@@ -133,8 +136,9 @@ void SpriteDraw(int texId, DirectX::XMFLOAT2 position, float size, const DirectX
 	const float SCREEN_WIDTH = static_cast<float>(Direct3DGetBackBufferWidth());
 	const float SCREEN_HEIGHT = static_cast<float>(Direct3DGetBackBufferHeight());
 
-	float texWidth = static_cast<float>(TextureGetWidth(texId));
-	float texHeight = static_cast<float>(TextureGetHeight(texId));
+	// テクスチャのサイズ取得
+	float texWidth = static_cast<float>(pTexture->GetSize().x);
+	float texHeight = static_cast<float>(pTexture->GetSize().y);
 
 	//四角形の描画
 	v[0].position = { position.x, position.y, 0.0f };
@@ -174,14 +178,19 @@ void SpriteDraw(int texId, DirectX::XMFLOAT2 position, float size, const DirectX
 	Direct3DGetDeviceContext()->Draw(NUM_VERTEX, 0);
 }
 
+/*＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+	スプライトシート描画
+	----------------------------------------------------------------------------------------------------------
+	0を始点としたx, y番号でパターン指定
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝*/
 /*----------------------------------------------------------------------------------------------------------
-	UVスプライト描画（サイズ直接指定）
+	数値で直接描画サイズ指定
 
-	引数：テクスチャID, 左上座標, サイズ, UVパターン番号(x, y), UVパターン数(x, y), カラー
+	引数：テクスチャ, 左上座標, パターン番号(x, y), サイズ, カラー
 ----------------------------------------------------------------------------------------------------------*/
-void SpriteDrawUV(int texId, DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size, DirectX::XMUINT2 uvOffset, DirectX::XMUINT2 uvPattern, const DirectX::XMFLOAT4 color)
+void SpriteDraw(SpriteSheet* pSpriteSheet, const DirectX::XMFLOAT2& position, const DirectX::XMUINT2& patternNum, DirectX::XMFLOAT2 size, const DirectX::XMFLOAT4& color)
 {
-	SetTexture(texId);
+	pSpriteSheet->SetTexture();
 
 	// シェーダーを描画パイプラインに設定
 	Shader2DBeginPoint();
@@ -189,13 +198,17 @@ void SpriteDrawUV(int texId, DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size,
 	// 頂点バッファをロックする
 	D3D11_MAPPED_SUBRESOURCE msr;
 	Direct3DGetDeviceContext()->Map(g_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &msr);
-
+	
 	// 頂点バッファへの仮想ポインタを取得
 	Vertex* v = (Vertex*)msr.pData;
 
 	// 頂点情報を書き込み
 	const float SCREEN_WIDTH = static_cast<float>(Direct3DGetBackBufferWidth());
 	const float SCREEN_HEIGHT = static_cast<float>(Direct3DGetBackBufferHeight());
+
+	// UVパターンのサイズ取得
+	float patternWidth = static_cast<float>(pSpriteSheet->GetPatternSize().x);
+	float patternHeight = static_cast<float>(pSpriteSheet->GetPatternSize().y);
 
 	//四角形の描画
 	v[0].position = { position.x, position.y, 0.0f };
@@ -208,16 +221,17 @@ void SpriteDrawUV(int texId, DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size,
 		v[i].color = color;
 	}
 
-	float texWidth = static_cast<float>(TextureGetWidth(texId));
-	float texHeight = static_cast<float>(TextureGetHeight(texId));
+	// テクスチャのサイズ取得
+	float texWidth = static_cast<float>(pSpriteSheet->GetSize().x);
+	float texHeight = static_cast<float>(pSpriteSheet->GetSize().y);
 
-	float tw = texWidth / uvPattern.x;
-	float th = texHeight / uvPattern.y;
+	float offsetX = patternWidth * patternNum.x;
+	float offsetY = patternHeight * patternNum.y;
 
-	float u0 = uvOffset.x / texWidth;
-	float v0 = uvOffset.y / texHeight;
-	float u1 = (uvOffset.x + tw) / texWidth;
-	float v1 = (uvOffset.y + th) / texHeight;
+	float u0 = offsetX / texWidth;
+	float v0 = offsetY / texHeight;
+	float u1 = (offsetX + patternWidth) / texWidth;
+	float v1 = (offsetY + patternHeight) / texHeight;
 
 	v[0].texCoord = { u0, v0 };
 	v[1].texCoord = { u1, v0 };
@@ -247,13 +261,13 @@ void SpriteDrawUV(int texId, DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size,
 }
 
 /*----------------------------------------------------------------------------------------------------------
-	UVスプライト描画（拡大率でサイズ指定）
+	拡大率で描画サイズ指定
 
-	引数：テクスチャID, 左上座標, 拡大率, UVパターン番号(x, y), UVパターン数(x, y), カラー
+	引数：テクスチャID, 左上座標, パターン番号(x, y), 拡大率, カラー
 ----------------------------------------------------------------------------------------------------------*/
-void SpriteDrawUV(int texId, DirectX::XMFLOAT2 position, float size, DirectX::XMUINT2 uvOffset, DirectX::XMUINT2 uvPattern, const DirectX::XMFLOAT4 color)
+void SpriteDraw(SpriteSheet* pSpriteSheet, const DirectX::XMFLOAT2& position, const DirectX::XMUINT2& patternNum, const float& size, const DirectX::XMFLOAT4& color)
 {
-	SetTexture(texId);
+	pSpriteSheet->SetTexture();
 
 	// シェーダーを描画パイプラインに設定
 	Shader2DBeginPoint();
@@ -269,27 +283,191 @@ void SpriteDrawUV(int texId, DirectX::XMFLOAT2 position, float size, DirectX::XM
 	const float SCREEN_WIDTH = static_cast<float>(Direct3DGetBackBufferWidth());
 	const float SCREEN_HEIGHT = static_cast<float>(Direct3DGetBackBufferHeight());
 
-	float texWidth = static_cast<float>(TextureGetWidth(texId));
-	float texHeight = static_cast<float>(TextureGetHeight(texId));
+	// UVパターンのサイズ取得
+	float patternWidth = static_cast<float>(pSpriteSheet->GetPatternSize().x);
+	float patternHeight = static_cast<float>(pSpriteSheet->GetPatternSize().y);
 
 	//四角形の描画
 	v[0].position = { position.x, position.y, 0.0f };
-	v[1].position = { position.x + (texWidth * size), position.y, 0.0f };
-	v[2].position = { position.x, position.y + (texHeight * size), 0.0f };
-	v[3].position = { position.x + (texWidth * size), position.y + (texHeight * size), 0.0f };
+	v[1].position = { position.x + (patternWidth * size), position.y, 0.0f };
+	v[2].position = { position.x, position.y + (patternHeight * size), 0.0f };
+	v[3].position = { position.x + (patternWidth * size), position.y + (patternHeight * size), 0.0f };
 
 	for (int i = 0; i < NUM_VERTEX; i++)
 	{
 		v[i].color = color;
 	}
 
-	float tw = texWidth / uvPattern.x;
-	float th = texHeight / uvPattern.y;
+	// テクスチャのサイズ取得
+	float texWidth = static_cast<float>(pSpriteSheet->GetSize().x);
+	float texHeight = static_cast<float>(pSpriteSheet->GetSize().y);
 
-	float u0 = uvOffset.x / texWidth;
-	float v0 = uvOffset.y / texHeight;
-	float u1 = (uvOffset.x + tw) / texWidth;
-	float v1 = (uvOffset.y + th) / texHeight;
+	float offsetX = patternWidth * patternNum.x;
+	float offsetY = patternHeight * patternNum.y;
+
+	float u0 = offsetX / texWidth;
+	float v0 = offsetY / texHeight;
+	float u1 = (offsetX + patternWidth) / texWidth;
+	float v1 = (offsetY + patternHeight) / texHeight;
+
+	v[0].texCoord = { u0, v0 };
+	v[1].texCoord = { u1, v0 };
+	v[2].texCoord = { u0, v1 };
+	v[3].texCoord = { u1, v1 };
+
+	// 頂点バッファのロックを解除
+	Direct3DGetDeviceContext()->Unmap(g_pVertexBuffer, 0);
+
+	// 頂点バッファを描画パイプラインに設定
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
+	Direct3DGetDeviceContext()->IASetVertexBuffers(0, 1, &g_pVertexBuffer, &stride, &offset);
+
+	// 頂点シェーダーにワールド変換行列を設定
+	Shader2DSetWorldMatrix(XMMatrixIdentity());
+
+	// 頂点シェーダーにプロジェクション変換行列を設定
+	Shader2DSetProjectionMatrix(XMMatrixOrthographicOffCenterLH(0.0f, SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f, 0.0f, 1.0f));
+	Shader2DSetColor({ 1.0f,1.0f,1.0f,1.0f });
+
+	// プリミティブトポロジ設定
+	Direct3DGetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+
+	// ポリゴン描画命令発行
+	Direct3DGetDeviceContext()->Draw(NUM_VERTEX, 0);
+}
+
+/*＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+	スプライトシート描画
+	----------------------------------------------------------------------------------------------------------
+	パターン番号でパターン指定
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝*/
+/*----------------------------------------------------------------------------------------------------------
+	数値で直接描画サイズ指定
+
+	引数：テクスチャ, 左上座標, パターン番号(x, y), サイズ, カラー
+----------------------------------------------------------------------------------------------------------*/
+void SpriteDraw(SpriteSheet* pSpriteSheet, const DirectX::XMFLOAT2& position, const int& patternNum, DirectX::XMFLOAT2 size, const DirectX::XMFLOAT4& color)
+{
+	pSpriteSheet->SetTexture();
+
+	// シェーダーを描画パイプラインに設定
+	Shader2DBeginPoint();
+
+	// 頂点バッファをロックする
+	D3D11_MAPPED_SUBRESOURCE msr;
+	Direct3DGetDeviceContext()->Map(g_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &msr);
+
+	// 頂点バッファへの仮想ポインタを取得
+	Vertex* v = (Vertex*)msr.pData;
+
+	// 頂点情報を書き込み
+	const float SCREEN_WIDTH = static_cast<float>(Direct3DGetBackBufferWidth());
+	const float SCREEN_HEIGHT = static_cast<float>(Direct3DGetBackBufferHeight());
+
+	// UVパターンのサイズ取得
+	float patternWidth = static_cast<float>(pSpriteSheet->GetPatternSize().x);
+	float patternHeight = static_cast<float>(pSpriteSheet->GetPatternSize().y);
+
+	//四角形の描画
+	v[0].position = { position.x, position.y, 0.0f };
+	v[1].position = { position.x + size.x, position.y, 0.0f };
+	v[2].position = { position.x, position.y + size.y, 0.0f };
+	v[3].position = { position.x + size.x, position.y + size.y, 0.0f };
+
+	for (int i = 0; i < NUM_VERTEX; i++)
+	{
+		v[i].color = color;
+	}
+
+	// テクスチャのサイズ取得
+	float texWidth = static_cast<float>(pSpriteSheet->GetSize().x);
+	float texHeight = static_cast<float>(pSpriteSheet->GetSize().y);
+
+	float offsetX = patternWidth * (patternNum % pSpriteSheet->GetPatternMatrix().x);
+	float offsetY = patternHeight * (patternNum / pSpriteSheet->GetPatternMatrix().x);
+
+	float u0 = offsetX / texWidth;
+	float v0 = offsetY / texHeight;
+	float u1 = (offsetX + patternWidth) / texWidth;
+	float v1 = (offsetY + patternHeight) / texHeight;
+
+	v[0].texCoord = { u0, v0 };
+	v[1].texCoord = { u1, v0 };
+	v[2].texCoord = { u0, v1 };
+	v[3].texCoord = { u1, v1 };
+
+	// 頂点バッファのロックを解除
+	Direct3DGetDeviceContext()->Unmap(g_pVertexBuffer, 0);
+
+	// 頂点バッファを描画パイプラインに設定
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
+	Direct3DGetDeviceContext()->IASetVertexBuffers(0, 1, &g_pVertexBuffer, &stride, &offset);
+
+	// 頂点シェーダーにワールド変換行列を設定
+	Shader2DSetWorldMatrix(XMMatrixIdentity());
+
+	// 頂点シェーダーにプロジェクション変換行列を設定
+	Shader2DSetProjectionMatrix(XMMatrixOrthographicOffCenterLH(0.0f, SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f, 0.0f, 1.0f));
+	Shader2DSetColor({ 1.0f,1.0f,1.0f,1.0f });
+
+	// プリミティブトポロジ設定
+	Direct3DGetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+
+	// ポリゴン描画命令発行
+	Direct3DGetDeviceContext()->Draw(NUM_VERTEX, 0);
+}
+
+/*----------------------------------------------------------------------------------------------------------
+	拡大率で描画サイズ指定
+
+	引数：テクスチャ, 左上座標, パターン番号, サイズ, カラー
+----------------------------------------------------------------------------------------------------------*/
+void SpriteDraw(SpriteSheet* pSpriteSheet, const DirectX::XMFLOAT2& position, const int& patternNum, const float& size, const DirectX::XMFLOAT4& color)
+{
+	pSpriteSheet->SetTexture();
+
+	// シェーダーを描画パイプラインに設定
+	Shader2DBeginPoint();
+
+	// 頂点バッファをロックする
+	D3D11_MAPPED_SUBRESOURCE msr;
+	Direct3DGetDeviceContext()->Map(g_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &msr);
+
+	// 頂点バッファへの仮想ポインタを取得
+	Vertex* v = (Vertex*)msr.pData;
+
+	// 頂点情報を書き込み
+	const float SCREEN_WIDTH = static_cast<float>(Direct3DGetBackBufferWidth());
+	const float SCREEN_HEIGHT = static_cast<float>(Direct3DGetBackBufferHeight());
+
+	// UVパターンのサイズ取得
+	float patternWidth = static_cast<float>(pSpriteSheet->GetPatternSize().x);
+	float patternHeight = static_cast<float>(pSpriteSheet->GetPatternSize().y);
+
+	//四角形の描画
+	v[0].position = { position.x, position.y, 0.0f };
+	v[1].position = { position.x + (patternWidth * size), position.y, 0.0f };
+	v[2].position = { position.x, position.y + (patternHeight * size), 0.0f };
+	v[3].position = { position.x + (patternWidth * size), position.y + (patternHeight * size), 0.0f };
+
+	for (int i = 0; i < NUM_VERTEX; i++)
+	{
+		v[i].color = color;
+	}
+
+	// テクスチャのサイズ取得
+	float texWidth = static_cast<float>(pSpriteSheet->GetSize().x);
+	float texHeight = static_cast<float>(pSpriteSheet->GetSize().y);
+
+	float offsetX = patternWidth * (patternNum % pSpriteSheet->GetPatternMatrix().x);
+	float offsetY = patternHeight * (patternNum / pSpriteSheet->GetPatternMatrix().x);
+
+	float u0 = offsetX / texWidth;
+	float v0 = offsetY / texHeight;
+	float u1 = (offsetX + patternWidth) / texWidth;
+	float v1 = (offsetY + patternHeight) / texHeight;
 
 	v[0].texCoord = { u0, v0 };
 	v[1].texCoord = { u1, v0 };

@@ -9,18 +9,9 @@
 */
 #include "animation.h"
 #include "sprite.h"
+#include "texture.h"
 #include <DirectXMath.h>
 using namespace DirectX;
-
-void AnimationPattern::Draw(DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size, int patternNum,
-	XMFLOAT4 color) const
-{
-	SpriteDrawUV(texId, position, size,
-		{ startPos.x + patternSize.x * (patternNum % horizontalPatternMax),
-		  startPos.y + patternSize.y * (patternNum / horizontalPatternMax) },
-		{ horizontalPatternMax, patternMax / horizontalPatternMax},
-		color);
-}
 
 void Animation::Update(double elapsedTime)
 {
@@ -28,20 +19,23 @@ void Animation::Update(double elapsedTime)
 
 	accumulatedTime += elapsedTime;
 
-	if (accumulatedTime >= pAnimPattern->GetPerSecond()) {
-		pattern = (pattern + 1) % pAnimPattern->GetPatternMax();
+	if (accumulatedTime >= perSecond) {
+		patternNum = (patternNum + 1) % pSpriteSheet->GetPatternMax();
 
-		if (pattern == pAnimPattern->GetPatternMax() -1) {
-			if (!pAnimPattern->LoopFlg()) {
-				isStoped = true;
-			}
+		if (patternNum == pSpriteSheet->GetPatternMax() - 1) {
+			if (!isLoop) isStoped = true;
 		}
 
-		accumulatedTime -= pAnimPattern->GetPerSecond();
+		accumulatedTime -= perSecond;
 	}
 }
 
-void Animation::Draw(DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size, DirectX::XMFLOAT4 color) const
+void Animation::Draw(const DirectX::XMFLOAT2& position, const DirectX::XMFLOAT2& size, const DirectX::XMFLOAT4& color) const
 {
-	pAnimPattern->Draw(position, size, pattern, color);
+	pSpriteSheet->Draw(position, patternNum, size, color);
+}
+
+void Animation::Draw(const DirectX::XMFLOAT2& position, const float& size, const DirectX::XMFLOAT4& color) const
+{
+	pSpriteSheet->Draw(position, patternNum, size, color);
 }

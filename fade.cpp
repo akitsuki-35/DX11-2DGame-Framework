@@ -8,9 +8,12 @@
 *
 */
 #include "fade.h"
+#include "main.h"
 #include "sprite.h"
 #include "texture.h"
 #include "direct3d.h"
+
+#include "debug_memoryleak.h"
 
 static FadeState g_FadeState = FADE_IN;
 static double g_FadeTime;
@@ -19,16 +22,20 @@ static double g_FadeStartTime = 0.0;
 static XMFLOAT4 g_FadeColor = { 0.0f, 0.0f, 0.0f, 1.0f };
 static int g_FadeTexID = -1;
 
+Texture* g_FadeTexture{ nullptr };
+
 void FadeInitialize()
 {
 	g_FadeState = FADE_IN;
 	g_Accumulatedtime = 0.0;
 
-	g_FadeTexID = TextureLoad(L"Resources/Texture/Common/white.png");
+	//g_FadeTexID = TextureLoad(L"Resources/Texture/Common/white.png");
+	g_FadeTexture = new Texture(L"Resources/Texture/Common/white.png");
 }
 
 void FadeFinalize()
 {
+	delete g_FadeTexture;
 }
 
 void FadeUpdate(double elapsedTime)
@@ -57,10 +64,12 @@ void FadeDraw()
 		return;
 	}
 
-	SpriteDraw(g_FadeTexID, { 0.0f, 0.0f },
-		{ static_cast<float>(Direct3DGetBackBufferWidth()),
-		static_cast<float>(Direct3DGetBackBufferHeight()) },
-		g_FadeColor);
+	//SpriteDraw(g_FadeTexID, { 0.0f, 0.0f },
+	//	{ static_cast<float>(Direct3DGetBackBufferWidth()),
+	//	static_cast<float>(Direct3DGetBackBufferHeight()) },
+	//	g_FadeColor);
+
+	g_FadeTexture->Draw({ 0.0f, 0.0f }, { SCREEN_WIDTH, SCREEN_HEIGHT }, g_FadeColor);
 }
 
 void FadeStart(double fadeTime, bool isFadeIn, XMFLOAT4 fadeColor)
