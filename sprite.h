@@ -34,7 +34,7 @@ void SpriteDraw(Texture* pTexture, const DirectX::XMFLOAT2& position, const Dire
 	const DirectX::XMFLOAT4& color = { 1.0f,1.0f,1.0f,1.0f });
 
 // 拡大率でサイズ指定
-void SpriteDraw(Texture* pTexture, const DirectX::XMFLOAT2& position, const float& size = 1.0f,
+void SpriteDraw(Texture* pTexture, const DirectX::XMFLOAT2& position, const float& scale = 1.0f,
 	const DirectX::XMFLOAT4& color = { 1.0f,1.0f,1.0f,1.0f });
 
 /*----------------------------------------------------------------------------------------------------------
@@ -52,7 +52,7 @@ void SpriteDraw(SpriteSheet* pSpriteSheet, const DirectX::XMFLOAT2& position,
 
 // 拡大率でサイズ指定
 void SpriteDraw(SpriteSheet* pSpriteSheet, const DirectX::XMFLOAT2& position,
-	const DirectX::XMUINT2& patternNum, const float& size = 1.0f,
+	const DirectX::XMUINT2& patternNum, const float& scale = 1.0f,
 	const DirectX::XMFLOAT4& color = { 1.0f,1.0f,1.0f,1.0f });
 
 /*----------------------------------------------------------------------------------------------------------
@@ -70,7 +70,7 @@ void SpriteDraw(SpriteSheet* pSpriteSheet, const DirectX::XMFLOAT2& position,
 
 // 拡大率でサイズ指定
 void SpriteDraw(SpriteSheet* pSpriteSheet, const DirectX::XMFLOAT2& position,
-	const int& patternNum, const float& size = 1.0f,
+	const int& patternNum, const float& scale = 1.0f,
 	const DirectX::XMFLOAT4& color = { 1.0f,1.0f,1.0f,1.0f });
 
 #endif // SPRITE_H

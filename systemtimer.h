@@ -32,7 +32,7 @@ void SystemTimerAdvance();
 double GetSystemTimer();
 
 // Œ»İ‚ÌŠÔ‚ğæ“¾
-double SGetAbsoluteTime(void);
+double GetAbsoluteTime(void);
 
 // Œo‰ßŠÔ‚Ìæ“¾
 float GetElapsedTime(void);

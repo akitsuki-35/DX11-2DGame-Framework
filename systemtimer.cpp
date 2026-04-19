@@ -126,7 +126,7 @@ float GetElapsedTime(void)
 }
 
 // システムタイマーが止まっているか？
-bool SystemTimer_IsStoped(void)
+bool SystemTimerIsStoped(void)
 {
     return g_IsTimerStopped;
 }

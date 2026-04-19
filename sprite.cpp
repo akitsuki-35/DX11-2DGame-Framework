@@ -118,7 +118,7 @@ void SpriteDraw(Texture* pTexture, const DirectX::XMFLOAT2& position, const Dire
 
 	引数：テクスチャID, 左上座標, 拡大率, カラー
 ----------------------------------------------------------------------------------------------------------*/
-void SpriteDraw(Texture* pTexture, const DirectX::XMFLOAT2& position, const float& size, const DirectX::XMFLOAT4& color)
+void SpriteDraw(Texture* pTexture, const DirectX::XMFLOAT2& position, const float& scale, const DirectX::XMFLOAT4& color)
 {
 	pTexture->SetTexture();
 
@@ -142,9 +142,9 @@ void SpriteDraw(Texture* pTexture, const DirectX::XMFLOAT2& position, const floa
 
 	//四角形の描画
 	v[0].position = { position.x, position.y, 0.0f };
-	v[1].position = { position.x + (texWidth * size), position.y, 0.0f };
-	v[2].position = { position.x, position.y + (texHeight * size), 0.0f };
-	v[3].position = { position.x + (texWidth * size), position.y + (texHeight * size), 0.0f };
+	v[1].position = { position.x + (texWidth * scale), position.y, 0.0f };
+	v[2].position = { position.x, position.y + (texHeight * scale), 0.0f };
+	v[3].position = { position.x + (texWidth * scale), position.y + (texHeight * scale), 0.0f };
 
 	for (int i = 0; i < NUM_VERTEX; i++)
 	{
@@ -263,9 +263,9 @@ void SpriteDraw(SpriteSheet* pSpriteSheet, const DirectX::XMFLOAT2& position, co
 /*----------------------------------------------------------------------------------------------------------
 	拡大率で描画サイズ指定
 
-	引数：テクスチャID, 左上座標, パターン番号(x, y), 拡大率, カラー
+	引数：テクスチャ, 左上座標, パターン番号(x, y), 拡大率, カラー
 ----------------------------------------------------------------------------------------------------------*/
-void SpriteDraw(SpriteSheet* pSpriteSheet, const DirectX::XMFLOAT2& position, const DirectX::XMUINT2& patternNum, const float& size, const DirectX::XMFLOAT4& color)
+void SpriteDraw(SpriteSheet* pSpriteSheet, const DirectX::XMFLOAT2& position, const DirectX::XMUINT2& patternNum, const float& scale, const DirectX::XMFLOAT4& color)
 {
 	pSpriteSheet->SetTexture();
 
@@ -289,9 +289,9 @@ void SpriteDraw(SpriteSheet* pSpriteSheet, const DirectX::XMFLOAT2& position, co
 
 	//四角形の描画
 	v[0].position = { position.x, position.y, 0.0f };
-	v[1].position = { position.x + (patternWidth * size), position.y, 0.0f };
-	v[2].position = { position.x, position.y + (patternHeight * size), 0.0f };
-	v[3].position = { position.x + (patternWidth * size), position.y + (patternHeight * size), 0.0f };
+	v[1].position = { position.x + (patternWidth * scale), position.y, 0.0f };
+	v[2].position = { position.x, position.y + (patternHeight * scale), 0.0f };
+	v[3].position = { position.x + (patternWidth * scale), position.y + (patternHeight * scale), 0.0f };
 
 	for (int i = 0; i < NUM_VERTEX; i++)
 	{
@@ -422,9 +422,9 @@ void SpriteDraw(SpriteSheet* pSpriteSheet, const DirectX::XMFLOAT2& position, co
 /*----------------------------------------------------------------------------------------------------------
 	拡大率で描画サイズ指定
 
-	引数：テクスチャ, 左上座標, パターン番号, サイズ, カラー
+	引数：テクスチャ, 左上座標, パターン番号, 拡大率, カラー
 ----------------------------------------------------------------------------------------------------------*/
-void SpriteDraw(SpriteSheet* pSpriteSheet, const DirectX::XMFLOAT2& position, const int& patternNum, const float& size, const DirectX::XMFLOAT4& color)
+void SpriteDraw(SpriteSheet* pSpriteSheet, const DirectX::XMFLOAT2& position, const int& patternNum, const float& scale, const DirectX::XMFLOAT4& color)
 {
 	pSpriteSheet->SetTexture();
 
@@ -448,9 +448,9 @@ void SpriteDraw(SpriteSheet* pSpriteSheet, const DirectX::XMFLOAT2& position, co
 
 	//四角形の描画
 	v[0].position = { position.x, position.y, 0.0f };
-	v[1].position = { position.x + (patternWidth * size), position.y, 0.0f };
-	v[2].position = { position.x, position.y + (patternHeight * size), 0.0f };
-	v[3].position = { position.x + (patternWidth * size), position.y + (patternHeight * size), 0.0f };
+	v[1].position = { position.x + (patternWidth * scale), position.y, 0.0f };
+	v[2].position = { position.x, position.y + (patternHeight * scale), 0.0f };
+	v[3].position = { position.x + (patternWidth * scale), position.y + (patternHeight * scale), 0.0f };
 
 	for (int i = 0; i < NUM_VERTEX; i++)
 	{
