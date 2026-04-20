@@ -125,10 +125,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 		else
 		{
 			SpriteInitialize();
-
-		#if defined(DEBUG) || defined(_DEBUG)
 			CollisionDrawInitialize();
-		#endif
 		}
 	}
 
@@ -214,11 +211,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 
 	SceneFinalize();
 	FadeFinalize();
-
-#if defined(DEBUG) || defined(_DEBUG)
 	CollisionDrawFinalize();
-#endif
-
 	SpriteFinalize();
 	Shader2DFinalize();
 	Direct3DFinalize();

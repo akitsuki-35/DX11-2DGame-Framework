@@ -491,15 +491,3 @@ void SpriteDraw(SpriteSheet* pSpriteSheet, const DirectX::XMFLOAT2& position, co
 	// ポリゴン描画命令発行
 	Direct3DGetDeviceContext()->Draw(NUM_VERTEX, 0);
 }
-
-/*＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
-	ライン描画関数
-＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝*/
-/*----------------------------------------------------------------------------------------------------------
-	数値で直接描画サイズ指定
-
-	引数：テクスチャID, 左上座標, サイズ, カラー
-----------------------------------------------------------------------------------------------------------*/
-void LineDraw(Texture* pTexture, const DirectX::XMFLOAT2& position, const DirectX::XMFLOAT2& size, const DirectX::XMFLOAT4& color)
-{
-}

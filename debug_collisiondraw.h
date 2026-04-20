@@ -15,7 +15,7 @@
 void CollisionDrawInitialize();
 void CollisionDrawFinalize();
 
-void CircleCollisionDraw(const DirectX::XMFLOAT2& center, const DirectX::XMFLOAT2& size,
+void CircleCollisionDraw(const DirectX::XMFLOAT2& center, const float& radius,
 	const DirectX::XMFLOAT4& color = { 1.0f,1.0f,1.0f,1.0f });
 
 void BoxCollisionDraw(const DirectX::XMFLOAT2& center, const DirectX::XMFLOAT2& size,
