@@ -28,8 +28,6 @@ void FadeInitialize()
 {
 	g_FadeState = FADE_IN;
 	g_Accumulatedtime = 0.0;
-
-	//g_FadeTexID = TextureLoad(L"Resources/Texture/Common/white.png");
 	g_FadeTexture = new Texture(L"Resources/Texture/Common/white.png");
 }
 
