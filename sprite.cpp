@@ -12,13 +12,10 @@
 #include "shader2d.h"
 #include "texture.h"
 #include "debug_ostream.h"
-#include <DirectXMath.h>
 using namespace DirectX;
 
 static constexpr int NUM_VERTEX{ 4 }; // 頂点数
-
 static ID3D11Buffer* g_pVertexBuffer{ nullptr }; // 頂点バッファ
-static ID3D11ShaderResourceView* g_pTexture{ nullptr }; // テクスチャ
 
 // 頂点構造体
 struct Vertex
@@ -45,7 +42,6 @@ void SpriteInitialize()
 
 void SpriteFinalize()
 {
-	SAFE_RELEASE(g_pTexture);
 	SAFE_RELEASE(g_pVertexBuffer);
 }
 
@@ -494,4 +490,16 @@ void SpriteDraw(SpriteSheet* pSpriteSheet, const DirectX::XMFLOAT2& position, co
 
 	// ポリゴン描画命令発行
 	Direct3DGetDeviceContext()->Draw(NUM_VERTEX, 0);
+}
+
+/*＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+	ライン描画関数
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝*/
+/*----------------------------------------------------------------------------------------------------------
+	数値で直接描画サイズ指定
+
+	引数：テクスチャID, 左上座標, サイズ, カラー
+----------------------------------------------------------------------------------------------------------*/
+void LineDraw(Texture* pTexture, const DirectX::XMFLOAT2& position, const DirectX::XMFLOAT2& size, const DirectX::XMFLOAT4& color)
+{
 }

@@ -12,6 +12,9 @@
 
 #include <DirectXMath.h>
 
+void CollisionInitialize();
+void CollisionFinalize();
+
 /*
 	Õ“Ë–h~‚Ì‚½‚ßnamespaceg—p
 	using namespace‚µ‚È‚¢‚±‚Æ
@@ -89,10 +92,12 @@ public:
 	bool IsOverlap(const Circle* target) const override;
 	bool IsOverlap(const Box* target) const override;
 
-	virtual void Move(const DirectX::XMFLOAT2& currentPos) override {
+	void Move(const DirectX::XMFLOAT2& currentPos) override {
 		min = center = position = currentPos;
 		max = { currentPos.x + size.x, currentPos.y + size.y };
 	}
+
+	void Draw() const override;
 };
 
 #endif // COLLISION_H

@@ -73,4 +73,11 @@ void SpriteDraw(SpriteSheet* pSpriteSheet, const DirectX::XMFLOAT2& position,
 	const int& patternNum, const float& scale = 1.0f,
 	const DirectX::XMFLOAT4& color = { 1.0f,1.0f,1.0f,1.0f });
 
+/*＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+	ライン描画
+	コリジョン可視化用
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝*/
+void LineDraw(Texture* pTexture, const DirectX::XMFLOAT2& position, const DirectX::XMFLOAT2& size,
+	const DirectX::XMFLOAT4& color = { 1.0f,1.0f,1.0f,1.0f });
+
 #endif // SPRITE_H

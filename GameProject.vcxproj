@@ -22,6 +22,7 @@
     <ClCompile Include="audio.cpp" />
     <ClCompile Include="collision.cpp" />
     <ClCompile Include="debug ostream.cpp" />
+    <ClCompile Include="debug_collisiondraw.cpp" />
     <ClCompile Include="debug_text.cpp" />
     <ClCompile Include="direct3d.cpp" />
     <ClCompile Include="fade.cpp" />
@@ -42,6 +43,7 @@
   <ItemGroup>
     <ClInclude Include="audio.h" />
     <ClInclude Include="collision.h" />
+    <ClInclude Include="debug_collisiondraw.h" />
     <ClInclude Include="debug_memoryleak.h" />
     <ClInclude Include="debug_ostream.h" />
     <ClInclude Include="debug_text.h" />

@@ -33,6 +33,7 @@
 
 // デバッグ関連インクルード
 #include "debug_text.h"
+#include "debug_collisiondraw.h"
 #include "debug_memoryleak.h"
 
 // コントローラ用ライブラリ
@@ -124,6 +125,10 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 		else
 		{
 			SpriteInitialize();
+
+		#if defined(DEBUG) || defined(_DEBUG)
+			CollisionDrawInitialize();
+		#endif
 		}
 	}
 
@@ -209,8 +214,12 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 
 	SceneFinalize();
 	FadeFinalize();
+
+#if defined(DEBUG) || defined(_DEBUG)
+	CollisionDrawFinalize();
+#endif
+
 	SpriteFinalize();
-	//TextureFinalize();
 	Shader2DFinalize();
 	Direct3DFinalize();
 	MouseFinalize();

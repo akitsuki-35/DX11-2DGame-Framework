@@ -29,6 +29,8 @@ XMFLOAT4 g_color{ 1.0f, 1.0f, 1.0f, 1.0f };
 
 void GameInitialize()
 {
+	CollisionInitialize();
+
 	FadeStart(1.0, true);
 
 	g_position[0] = { 64.0f, 64.0f };
@@ -49,6 +51,8 @@ void GameFinalize()
 	delete g_Animation;
 	delete g_RunningMan;
 	delete g_BackGround;
+
+	CollisionFinalize();
 }
 
 void GameUpdate(double elapsedTime)
@@ -84,4 +88,7 @@ void GameDraw()
 	g_BackGround->Draw({ 0.0f, 0.0f });
 	g_RunningMan->Draw(g_position[0], {1, 0}, { 140, 200 }, g_color);
 	g_Animation->Draw(g_position[1]);
+
+	g_Collision[0]->Draw();
+	g_Collision[1]->Draw();
 }
