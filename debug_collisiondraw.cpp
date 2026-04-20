@@ -48,11 +48,12 @@ void CollisionDrawFinalize()
 	delete g_pTexture;
 }
 
-void CircleCollisionDraw(const DirectX::XMFLOAT2& position, const DirectX::XMFLOAT2& size, const DirectX::XMFLOAT4& color)
+void CircleCollisionDraw(const DirectX::XMFLOAT2& center, const DirectX::XMFLOAT2& size, const DirectX::XMFLOAT4& color)
 {
+	
 }
 
-void BoxCollisionDraw(const DirectX::XMFLOAT2& position, const DirectX::XMFLOAT2& size, const DirectX::XMFLOAT4& color)
+void BoxCollisionDraw(const DirectX::XMFLOAT2& center, const DirectX::XMFLOAT2& size, const DirectX::XMFLOAT4& color)
 {
 #if defined(DEBUG) || defined(_DEBUG)
 
@@ -73,11 +74,11 @@ void BoxCollisionDraw(const DirectX::XMFLOAT2& position, const DirectX::XMFLOAT2
 	const float SCREEN_HEIGHT = static_cast<float>(Direct3DGetBackBufferHeight());
 
 	//四角形の描画
-	v[0].position = { position.x, position.y, 0.0f };
-	v[1].position = { position.x + size.x, position.y, 0.0f };
-	v[2].position = { position.x + size.x, position.y + size.y, 0.0f };
-	v[3].position = { position.x, position.y + size.y, 0.0f };
-	v[4].position = { position.x, position.y, 0.0f };
+	v[0].position = { center.x - (size.x / 2), center.y - (size.y / 2), 0.0f };
+	v[1].position = { center.x + (size.x / 2), center.y - (size.y / 2), 0.0f };
+	v[2].position = { center.x + (size.x / 2), center.y + (size.y / 2), 0.0f };
+	v[3].position = { center.x - (size.x / 2), center.y + (size.y / 2), 0.0f };
+	v[4].position = v[0].position;
 
 	for (int i = 0; i < NUM_VERTEX; i++)
 	{
@@ -88,7 +89,7 @@ void BoxCollisionDraw(const DirectX::XMFLOAT2& position, const DirectX::XMFLOAT2
 	v[1].texCoord = { 1.0f, 0.0f };
 	v[2].texCoord = { 1.0f, 1.0f };
 	v[3].texCoord = { 0.0f, 1.0f };
-	v[4].texCoord = { 0.0f, 0.0f };
+	v[4].texCoord = v[0].texCoord;
 
 	// 頂点バッファのロックを解除
 	Direct3DGetDeviceContext()->Unmap(g_pVertexBuffer, 0);

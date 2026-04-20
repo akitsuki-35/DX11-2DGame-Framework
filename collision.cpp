@@ -8,14 +8,17 @@
 *
 ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝*/
 #include "collision.h"
+#include "debug_collisiondraw.h"
 #include "texture.h"
 #include "sprite.h"
-#include "debug_collisiondraw.h"
+#include <cmath>
+using namespace DirectX;
 
 Texture* g_pTexture{ nullptr };
 
 void CollisionInitialize()
 {
+    // 描画用テクスチャ
     g_pTexture = new Texture(L"Resources/Texture/Common/white.png");
 }
 
@@ -26,16 +29,28 @@ void CollisionFinalize()
 
 bool Collision::Circle::IsOverlap(const Circle* target) const
 {
+    XMFLOAT2 distance{ target->center.x - center.x, target->center.y - center.y };
+    float centerDistance = std::sqrt((distance.x * distance.x) + (distance.y * distance.y));
+
+    if (centerDistance <= radius.x + target->radius.x) {
+        return true;
+    }
+    if (centerDistance <= radius.y + target->radius.y) {
+        return true;
+    }
+
     return false;
 }
 
-bool Collision::Circle::IsOverlap(const Box* target) const
+bool Collision::Circle::IsOverlap(const Box* /*target*/) const
 {
+    // 未実装
     return false;
 }
 
-bool Collision::Box::IsOverlap(const Circle* target) const
+bool Collision::Box::IsOverlap(const Circle* /*target*/) const
 {
+    // 未実装
     return false;
 }
 
@@ -49,5 +64,5 @@ bool Collision::Box::IsOverlap(const Box* target) const
 
 void Collision::Box::Draw() const
 {
-    BoxCollisionDraw(position, size, { 0.0f, 1.0f, 0.0f, 1.0f });
+    BoxCollisionDraw(center, size, { 0.0f, 1.0f, 0.0f, 1.0f });
 }

@@ -39,8 +39,8 @@ void GameInitialize()
 	g_BackGround = new Texture(L"Resources/Texture/background1.jpg");
 	g_RunningMan = new SpriteSheet(L"Resources/Texture/runningman001.png", { 5, 2 });
 	g_Animation = new Animation(g_RunningMan, { 0, 0 }, 0.05);
-	g_Collision[0] = new Collision::Box(g_position[0], { 140.0f, 200.0f });
-	g_Collision[1] = new Collision::Box(g_position[1], { 140.0f, 200.0f });
+	g_Collision[0] = new Collision::Box(g_position[0], { 100.0f, 160.0f }, { 140.0f, 200.0f });
+	g_Collision[1] = new Collision::Box(g_position[1], { 100.0f, 160.0f }, { 140.0f, 200.0f });
 }
 
 void GameFinalize()
@@ -72,7 +72,7 @@ void GameUpdate(double elapsedTime)
 		g_position[0].y += 3.0f;
 	}
 
-	g_Collision[0]->Move(g_position[0]);
+	g_Collision[0]->Move(g_position[0], { 140.0f, 200.0f });
 
 	if (g_Collision[0]->IsOverlap(g_Collision[1])) {
 		g_color = { 1.0f, 0.0f, 0.0f, 1.0f };
