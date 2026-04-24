@@ -16,7 +16,7 @@
 	衝突防止のためnamespace使用
 	using namespaceしないこと
 
-	※サークルコリジョン試作段階のため、ボックスコリジョンを使用すること
+	※サークルコリジョン不完全のため、基本的にボックスコリジョン使用推奨
 ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝*/
 /*----------------------------------------------------------------------------------------------------------
 	前方宣言
@@ -43,7 +43,6 @@ public:
 	}
 	virtual ~CollisionBase() = default;
 
-protected:
 	void SetCenter(const DirectX::XMFLOAT2& offset, const DirectX::XMFLOAT2& objectSize = { 0.0f, 0.0f }) {
 		if (objectSize.x && objectSize.y) {
 			center = { offset.x + objectSize.x / 2, offset.y + objectSize.y / 2 };
@@ -72,13 +71,15 @@ protected:
 ----------------------------------------------------------------------------------------------------------*/
 class Collision::Circle : public CollisionBase
 {
+	friend Box;
+
 private:
 	float radius{};
 
 public:
 	Circle(const DirectX::XMFLOAT2& position, const DirectX::XMFLOAT2& collisionSize,
-		const DirectX::XMFLOAT2& objectSize)
-		: CollisionBase(position, collisionSize, objectSize){
+		const DirectX::XMFLOAT2& objectSize = { 0.0f, 0.0f })
+		: CollisionBase(position, collisionSize, objectSize) {
 		if (collisionSize.x / 2 <= collisionSize.y / 2) {
 			radius = collisionSize.x / 2;
 		}
@@ -102,13 +103,15 @@ public:
 ----------------------------------------------------------------------------------------------------------*/
 class Collision::Box : public CollisionBase
 {
+	friend Circle;
+
 private:
 	DirectX::XMFLOAT2 min{};
 	DirectX::XMFLOAT2 max{};
 
 public:
 	Box(const DirectX::XMFLOAT2& position, const DirectX::XMFLOAT2& collisionSize,
-		const DirectX::XMFLOAT2& objectSize)
+		const DirectX::XMFLOAT2& objectSize = { 0.0f, 0.0f })
 		: CollisionBase(position, collisionSize, objectSize) {
 		min = { center.x - (collisionSize.x / 2), center.y - (collisionSize.y / 2) };
 		max = { center.x + (collisionSize.x / 2), center.y + (collisionSize.y / 2) };
