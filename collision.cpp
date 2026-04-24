@@ -14,10 +14,17 @@
 #include <cmath>
 using namespace DirectX;
 
+/*----------------------------------------------------------------------------------------------------------
+    ローカル関数 プロトタイプ宣言
+----------------------------------------------------------------------------------------------------------*/
+float GetDistance(const XMFLOAT2& targetA, const XMFLOAT2& targetB);
+
+/*----------------------------------------------------------------------------------------------------------
+    サークルコリジョン
+----------------------------------------------------------------------------------------------------------*/
 bool Collision::Circle::IsOverlap(const Circle* target) const
 {
-    XMFLOAT2 distance{ target->center.x - center.x, target->center.y - center.y };
-    float centerDistance = std::sqrt((distance.x * distance.x) + (distance.y * distance.y));
+    float centerDistance = GetDistance(target->center, center);
 
     if (centerDistance <= radius + target->radius) {
         return true;
@@ -26,10 +33,21 @@ bool Collision::Circle::IsOverlap(const Circle* target) const
     return false;
 }
 
-bool Collision::Circle::IsOverlap(const Box* /*target*/) const
+bool Collision::Circle::IsOverlap(const Box* target) const
 {
-    // 未実装
-    return false;
+    float distance[4] = {
+    GetDistance(target->min, center), GetDistance({target->max.x, target->min.y}, center),
+    GetDistance({target->min.x, target->max.y}, center), GetDistance(target->max, center),
+    };
+
+    return (center.x <= target->max.x + radius) && (center.x >= target->min.x - radius)
+        && (center.y <= target->max.y) && (center.y >= target->min.y)
+
+        || (center.x <= target->max.x) && (center.x >= target->min.x)
+        && (center.y <= target->max.y + radius) && (center.y >= target->min.y - radius)
+
+        || (distance[0] <= radius) || (distance[1] <= radius)
+        || (distance[2] <= radius) || (distance[3] <= radius);
 }
 
 void Collision::Circle::Draw() const
@@ -39,10 +57,12 @@ void Collision::Circle::Draw() const
 #endif
 }
 
-bool Collision::Box::IsOverlap(const Circle* /*target*/) const
+/*----------------------------------------------------------------------------------------------------------
+    ボックスコリジョン
+----------------------------------------------------------------------------------------------------------*/
+bool Collision::Box::IsOverlap(const Circle* target) const
 {
-    // 未実装
-    return false;
+    return target->IsOverlap(this);
 }
 
 bool Collision::Box::IsOverlap(const Box* target) const
@@ -58,4 +78,13 @@ void Collision::Box::Draw() const
 #if defined(DEBUG) || defined(_DEBUG)
     BoxCollisionDraw(center, collisionSize, { 0.0f, 1.0f, 0.0f, 1.0f });
 #endif
+}
+
+/*----------------------------------------------------------------------------------------------------------
+    距離の取得
+----------------------------------------------------------------------------------------------------------*/
+float GetDistance(const XMFLOAT2& targetA, const XMFLOAT2& targetB)
+{
+    XMFLOAT2 distance{ targetA.x - targetB.x, targetA.y - targetB.y };
+    return std::sqrt((distance.x * distance.x) + (distance.y * distance.y));
 }
