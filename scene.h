@@ -1,6 +1,6 @@
 /*＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 *
-*	シーン管理[scene.h]
+*	シーン基底クラス[scene.h]
 *
 * 　作成者 : Asuka Kuroda
 * 　作成日 : 2025/9/17
@@ -10,19 +10,15 @@
 #ifndef SCENE_H
 #define SCENE_H
 
-void SceneInitialize();
-void SceneFinalize();
-void SceneUpdate(double elapsedTime);
-void SceneDraw();
-
-enum Scene
+class Scene
 {
-	SCENE_TITLE,
-	SCENE_GAME,
-	SCENE_RESULT
-};
+public:
+	virtual ~Scene() = default;
 
-void SetNextScene(Scene next);
-void ChangeScene();
+	virtual void Initialize() = 0;
+	virtual void Finalize() = 0;
+	virtual void Update(double elapsed_time) = 0;
+	virtual void Draw() const = 0;
+};
 
 #endif // SCENE_H
