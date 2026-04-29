@@ -55,14 +55,14 @@ Texture::~Texture()
 	SAFE_RELEASE(pTexture);
 }
 
-void Texture::Draw(const DirectX::XMFLOAT2& position, const DirectX::XMFLOAT2& size, const DirectX::XMFLOAT4& color)
+void Texture::Draw(const DirectX::XMFLOAT2& position, const DirectX::XMFLOAT2& size, const float& angle, const DirectX::XMFLOAT4& color)
 {
-	SpriteDraw(this, position, size, color);
+	SpriteDraw(this, position, size, angle, color);
 }
 
-void Texture::Draw(const DirectX::XMFLOAT2& position, const float& size, const DirectX::XMFLOAT4& color)
+void Texture::Draw(const DirectX::XMFLOAT2& position, const float& angle, const float& scale, const DirectX::XMFLOAT4& color)
 {
-	SpriteDraw(this, position, size, color);
+	SpriteDraw(this, position, angle, scale, color);
 }
 
 void Texture::SetTexture()
@@ -79,22 +79,22 @@ SpriteSheet::SpriteSheet(const wchar_t* pFileName, const DirectX::XMUINT2& patte
 	patternSize.y = imageSize.y / patternMatrix.y;
 }
 
-void SpriteSheet::Draw(const DirectX::XMFLOAT2& position, const DirectX::XMUINT2& patternNum, const DirectX::XMFLOAT2& size, const DirectX::XMFLOAT4& color)
+void SpriteSheet::Draw(const DirectX::XMFLOAT2& position, const DirectX::XMUINT2& patternNum, const DirectX::XMFLOAT2& size, const float& angle, const DirectX::XMFLOAT4& color)
 {
-	SpriteDraw(this, position, patternNum, size, color);
+	SpriteDraw(this, position, patternNum, size, angle, color);
 }
 
-void SpriteSheet::Draw(const DirectX::XMFLOAT2& position, const DirectX::XMUINT2& patternNum, const float& size, const DirectX::XMFLOAT4& color)
+void SpriteSheet::Draw(const DirectX::XMFLOAT2& position, const DirectX::XMUINT2& patternNum, const float& angle, const float& scale, const DirectX::XMFLOAT4& color)
 {
-	SpriteDraw(this, position, patternNum, size, color);
+	SpriteDraw(this, position, patternNum, angle, scale, color);
 }
 
-void SpriteSheet::Draw(const DirectX::XMFLOAT2& position, const int& patternNum, const DirectX::XMFLOAT2& size, const DirectX::XMFLOAT4& color)
+void SpriteSheet::Draw(const DirectX::XMFLOAT2& position, const int& patternNum, const DirectX::XMFLOAT2& size, const float& angle, const DirectX::XMFLOAT4& color)
 {
-	SpriteDraw(this, position, patternNum, size, color);
+	SpriteDraw(this, position, patternNum, size, angle, color);
 }
 
-void SpriteSheet::Draw(const DirectX::XMFLOAT2& position, const int& patternNum, const float& size, const DirectX::XMFLOAT4& color)
+void SpriteSheet::Draw(const DirectX::XMFLOAT2& position, const int& patternNum, const float& angle, const float& scale, const DirectX::XMFLOAT4& color)
 {
-	SpriteDraw(this, position, patternNum, size, color);
+	SpriteDraw(this, position, patternNum, angle, scale, color);
 }

@@ -28,7 +28,7 @@ void FadeInitialize()
 {
 	g_FadeState = FADE_IN;
 	g_Accumulatedtime = 0.0;
-	g_FadeTexture = new Texture(L"Resources/Texture/Common/white.png");
+	g_FadeTexture = new Texture(L"Resources/Textures/Common/white.png");
 }
 
 void FadeFinalize()
@@ -62,12 +62,7 @@ void FadeDraw()
 		return;
 	}
 
-	//SpriteDraw(g_FadeTexID, { 0.0f, 0.0f },
-	//	{ static_cast<float>(Direct3DGetBackBufferWidth()),
-	//	static_cast<float>(Direct3DGetBackBufferHeight()) },
-	//	g_FadeColor);
-
-	g_FadeTexture->Draw({ 0.0f, 0.0f }, { SCREEN_WIDTH, SCREEN_HEIGHT }, g_FadeColor);
+	g_FadeTexture->Draw({ 0.0f, 0.0f }, { SCREEN_WIDTH, SCREEN_HEIGHT }, 0.0f, g_FadeColor);
 }
 
 void FadeStart(double fadeTime, bool isFadeIn, XMFLOAT4 fadeColor)

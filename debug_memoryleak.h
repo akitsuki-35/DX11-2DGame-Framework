@@ -10,6 +10,8 @@
 #ifndef DEBUG_MEMORYLEAK_H
 #define DEBUG_MEMORYLEAK_H
 
+#include <memory>
+
 // メモリリーク検出箇所を出力するマクロ
 // 他ファイルにインクルードのみで導入可
 

@@ -1,20 +1,27 @@
 /*＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 *
-*	ゲームシーン[game.h]
+*	テスト用シーン[test.h]
 *
-* 　作成者 : Asuka Kuroda
-* 　作成日 : 2026/03/28
+* 　Author  : Asuka Kuroda
+* 　Date	: 2026/04/29
 * ----------------------------------------------------------------------------------------------------------
 *
 ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝*/
-#ifndef GAME_H
-#define GAME_H
+#ifndef TEST_H
+#define TEST_H
 
 #include "scene.h"
 
-class Game : public Scene
+class Texture;
+class SpriteSheet;
+
+class Test : public Scene
 {
 private:
+	// テスト用のメンバ変数をここに追加
+	Texture* backGround{ nullptr };
+	SpriteSheet* runningMan{ nullptr };
+	float angle{ 0.0f };
 
 public:
 	void Initialize() override;
@@ -23,4 +30,4 @@ public:
 	void Draw() const override;
 };
 
-#endif // GAME_H
+#endif // TEST_H

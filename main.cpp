@@ -20,7 +20,7 @@
 #include "systemtimer.h"
 #include "audio.h"
 #include "shader2D.h"
-#include "scene.h"
+#include "manager.h"
 #include "fade.h"
 
 // 描画関連インクルード
@@ -130,13 +130,13 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 	}
 
 	dText::DebugText dt(Direct3DGetDevice(), Direct3DGetDeviceContext(),
-		L"Resources/Texture/Common/text.png",
+		L"Resources/Textures/Common/text.png",
 		Direct3DGetBackBufferWidth(), Direct3DGetBackBufferHeight(),
 		0.0f, 0.0f, 0, 0, 0.0f, 0.0f);
 
 	FadeInitialize();
 	FadeStart(0.0f, false);
-	SceneInitialize();
+	Manager::Initialize();
 
 	//時間計測用
 	double fps = 0.0;
@@ -180,12 +180,12 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 
 				KeyLoggerUpdate();
 
-				SceneUpdate(elapsedTime);
+				Manager::Update(elapsedTime);
 				FadeUpdate(elapsedTime);
 
 				Direct3DClear();
 
-				SceneDraw();
+				Manager::Draw();
 				FadeDraw();
 
 #if defined(DEBUG) || defined(_DEBUG)
@@ -203,13 +203,13 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 				frameCount++;
 				
 				// シーン遷移を判定
-				ChangeScene();
+				Manager::Transition();
 			}
 		}
 
 	} while (msg.message != WM_QUIT);
 
-	SceneFinalize();
+	Manager::Finalize();
 	FadeFinalize();
 	CollisionDrawFinalize();
 	SpriteFinalize();

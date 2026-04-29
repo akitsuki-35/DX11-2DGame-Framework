@@ -42,6 +42,9 @@
     <Filter Include="ヘッダー ファイル\Game">
       <UniqueIdentifier>{377b112a-bd98-4875-b223-c62706727842}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Test">
+      <UniqueIdentifier>{bc7d2504-d291-4ab1-8d96-373ab21ce9ba}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="game.cpp">
@@ -89,9 +92,6 @@
     <ClCompile Include="texture.cpp">
       <Filter>ソース ファイル\Common</Filter>
     </ClCompile>
-    <ClCompile Include="scene.cpp">
-      <Filter>ソース ファイル\Common</Filter>
-    </ClCompile>
     <ClCompile Include="title.cpp">
       <Filter>ソース ファイル\Title</Filter>
     </ClCompile>
@@ -103,6 +103,12 @@
     </ClCompile>
     <ClCompile Include="debug_collisiondraw.cpp">
       <Filter>ソース ファイル\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="manager.cpp">
+      <Filter>ソース ファイル\System</Filter>
+    </ClCompile>
+    <ClCompile Include="test.cpp">
+      <Filter>Test</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -148,9 +154,6 @@
     <ClInclude Include="main.h">
       <Filter>ヘッダー ファイル\System</Filter>
     </ClInclude>
-    <ClInclude Include="scene.h">
-      <Filter>ヘッダー ファイル\Common</Filter>
-    </ClInclude>
     <ClInclude Include="mouse.h">
       <Filter>ヘッダー ファイル\System</Filter>
     </ClInclude>
@@ -172,12 +175,21 @@
     <ClInclude Include="debug_collisiondraw.h">
       <Filter>ヘッダー ファイル\Debug</Filter>
     </ClInclude>
+    <ClInclude Include="manager.h">
+      <Filter>ヘッダー ファイル\System</Filter>
+    </ClInclude>
+    <ClInclude Include="test.h">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="scene.h">
+      <Filter>ヘッダー ファイル\System</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="PixelShader2d.hlsl">
+    <FxCompile Include="hlsl\PixelShader2d.hlsl">
       <Filter>シェーダー ファイル</Filter>
     </FxCompile>
-    <FxCompile Include="VertexShader2d.hlsl">
+    <FxCompile Include="hlsl\VertexShader2d.hlsl">
       <Filter>シェーダー ファイル</Filter>
     </FxCompile>
   </ItemGroup>

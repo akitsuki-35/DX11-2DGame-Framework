@@ -30,12 +30,13 @@
     <ClCompile Include="keyboard.cpp" />
     <ClCompile Include="keylogger.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="manager.cpp" />
     <ClCompile Include="mouse.cpp" />
-    <ClCompile Include="scene.cpp" />
     <ClCompile Include="shader2d.cpp" />
     <ClCompile Include="sprite.cpp" />
     <ClCompile Include="animation.cpp" />
     <ClCompile Include="systemtimer.cpp" />
+    <ClCompile Include="test.cpp" />
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="title.cpp" />
     <ClCompile Include="WICTextureLoader11.cpp" />
@@ -53,23 +54,29 @@
     <ClInclude Include="gameobject.h" />
     <ClInclude Include="keyboard.h" />
     <ClInclude Include="keylogger.h" />
+    <ClInclude Include="manager.h" />
     <ClInclude Include="mouse.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="shader2d.h" />
     <ClInclude Include="sprite.h" />
     <ClInclude Include="animation.h" />
     <ClInclude Include="systemtimer.h" />
+    <ClInclude Include="test.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="title.h" />
     <ClInclude Include="WICTextureLoader11.h" />
     <ClInclude Include="main.h" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="PixelShader2d.hlsl">
+    <FxCompile Include="hlsl\PixelShader2d.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
     </FxCompile>
-    <FxCompile Include="VertexShader2d.hlsl">
+    <FxCompile Include="hlsl\VertexShader2d.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>

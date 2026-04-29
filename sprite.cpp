@@ -51,9 +51,9 @@ void SpriteFinalize()
 /*----------------------------------------------------------------------------------------------------------
 	数値で直接描画サイズ指定
 
-	引数：テクスチャID, 左上座標, サイズ, カラー
+	引数：テクスチャ, 左上座標, サイズ, 回転角, カラー
 ----------------------------------------------------------------------------------------------------------*/
-void SpriteDraw(Texture* pTexture, const DirectX::XMFLOAT2& position, const DirectX::XMFLOAT2& size, const DirectX::XMFLOAT4& color)
+void SpriteDraw(Texture* pTexture, const DirectX::XMFLOAT2& position, const DirectX::XMFLOAT2& size, const float& angle, const DirectX::XMFLOAT4& color)
 {
 	pTexture->SetTexture();
 
@@ -95,8 +95,17 @@ void SpriteDraw(Texture* pTexture, const DirectX::XMFLOAT2& position, const Dire
 	UINT offset = 0;
 	Direct3DGetDeviceContext()->IASetVertexBuffers(0, 1, &g_pVertexBuffer, &stride, &offset);
 
+	// 中心座標を算出
+	float centerX = position.x + size.x / 2;
+	float centerY = position.y + size.y / 2;
+		
+	// 中心座標に平行移動→回転→元の座標に平行移動
+	XMMATRIX transToCenter = XMMatrixTranslation(-centerX, -centerY, 0.0f);
+	XMMATRIX rot = XMMatrixRotationZ(-angle);
+	XMMATRIX transBack = XMMatrixTranslation(centerX, centerY, 0.0f);
+	
 	// 頂点シェーダーにワールド変換行列を設定
-	Shader2DSetWorldMatrix(XMMatrixIdentity());
+	Shader2DSetWorldMatrix(transToCenter * rot * transBack);
 
 	// 頂点シェーダーにプロジェクション変換行列を設定
 	Shader2DSetProjectionMatrix(XMMatrixOrthographicOffCenterLH(0.0f, SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f, 0.0f, 1.0f));
@@ -112,9 +121,9 @@ void SpriteDraw(Texture* pTexture, const DirectX::XMFLOAT2& position, const Dire
 /*----------------------------------------------------------------------------------------------------------
 	拡大率で描画サイズ指定
 
-	引数：テクスチャID, 左上座標, 拡大率, カラー
+	引数：テクスチャ, 左上座標, 回転角, 拡大率, カラー
 ----------------------------------------------------------------------------------------------------------*/
-void SpriteDraw(Texture* pTexture, const DirectX::XMFLOAT2& position, const float& scale, const DirectX::XMFLOAT4& color)
+void SpriteDraw(Texture* pTexture, const DirectX::XMFLOAT2& position, const float& angle, const float& scale, const DirectX::XMFLOAT4& color)
 {
 	pTexture->SetTexture();
 
@@ -160,8 +169,17 @@ void SpriteDraw(Texture* pTexture, const DirectX::XMFLOAT2& position, const floa
 	UINT offset = 0;
 	Direct3DGetDeviceContext()->IASetVertexBuffers(0, 1, &g_pVertexBuffer, &stride, &offset);
 
+	// 中心座標を算出
+	float centerX = position.x + (texWidth * scale) / 2;
+	float centerY = position.y + (texHeight * scale) / 2;
+
+	// 中心座標に平行移動→回転→元の座標に平行移動
+	XMMATRIX transToCenter = XMMatrixTranslation(-centerX, -centerY, 0.0f);
+	XMMATRIX rot = XMMatrixRotationZ(-angle);
+	XMMATRIX transBack = XMMatrixTranslation(centerX, centerY, 0.0f);
+
 	// 頂点シェーダーにワールド変換行列を設定
-	Shader2DSetWorldMatrix(XMMatrixIdentity());
+	Shader2DSetWorldMatrix(transToCenter * rot * transBack);
 
 	// 頂点シェーダーにプロジェクション変換行列を設定
 	Shader2DSetProjectionMatrix(XMMatrixOrthographicOffCenterLH(0.0f, SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f, 0.0f, 1.0f));
@@ -182,9 +200,9 @@ void SpriteDraw(Texture* pTexture, const DirectX::XMFLOAT2& position, const floa
 /*----------------------------------------------------------------------------------------------------------
 	数値で直接描画サイズ指定
 
-	引数：テクスチャ, 左上座標, パターン番号(x, y), サイズ, カラー
+	引数：テクスチャ, 左上座標, パターン番号(x, y), サイズ, 回転角, カラー
 ----------------------------------------------------------------------------------------------------------*/
-void SpriteDraw(SpriteSheet* pSpriteSheet, const DirectX::XMFLOAT2& position, const DirectX::XMUINT2& patternNum, DirectX::XMFLOAT2 size, const DirectX::XMFLOAT4& color)
+void SpriteDraw(SpriteSheet* pSpriteSheet, const DirectX::XMFLOAT2& position, const DirectX::XMUINT2& patternNum, DirectX::XMFLOAT2 size, const float& angle, const DirectX::XMFLOAT4& color)
 {
 	pSpriteSheet->SetTexture();
 
@@ -242,8 +260,17 @@ void SpriteDraw(SpriteSheet* pSpriteSheet, const DirectX::XMFLOAT2& position, co
 	UINT offset = 0;
 	Direct3DGetDeviceContext()->IASetVertexBuffers(0, 1, &g_pVertexBuffer, &stride, &offset);
 
+	// 中心座標を算出
+	float centerX = position.x + size.x / 2;
+	float centerY = position.y + size.y / 2;
+
+	// 中心座標に平行移動→回転→元の座標に平行移動
+	XMMATRIX transToCenter = XMMatrixTranslation(-centerX, -centerY, 0.0f);
+	XMMATRIX rot = XMMatrixRotationZ(-angle);
+	XMMATRIX transBack = XMMatrixTranslation(centerX, centerY, 0.0f);
+
 	// 頂点シェーダーにワールド変換行列を設定
-	Shader2DSetWorldMatrix(XMMatrixIdentity());
+	Shader2DSetWorldMatrix(transToCenter * rot * transBack);
 
 	// 頂点シェーダーにプロジェクション変換行列を設定
 	Shader2DSetProjectionMatrix(XMMatrixOrthographicOffCenterLH(0.0f, SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f, 0.0f, 1.0f));
@@ -259,9 +286,9 @@ void SpriteDraw(SpriteSheet* pSpriteSheet, const DirectX::XMFLOAT2& position, co
 /*----------------------------------------------------------------------------------------------------------
 	拡大率で描画サイズ指定
 
-	引数：テクスチャ, 左上座標, パターン番号(x, y), 拡大率, カラー
+	引数：テクスチャ, 左上座標, パターン番号(x, y), 回転角, 拡大率, カラー
 ----------------------------------------------------------------------------------------------------------*/
-void SpriteDraw(SpriteSheet* pSpriteSheet, const DirectX::XMFLOAT2& position, const DirectX::XMUINT2& patternNum, const float& scale, const DirectX::XMFLOAT4& color)
+void SpriteDraw(SpriteSheet* pSpriteSheet, const DirectX::XMFLOAT2& position, const DirectX::XMUINT2& patternNum, const float& angle, const float& scale, const DirectX::XMFLOAT4& color)
 {
 	pSpriteSheet->SetTexture();
 
@@ -319,8 +346,17 @@ void SpriteDraw(SpriteSheet* pSpriteSheet, const DirectX::XMFLOAT2& position, co
 	UINT offset = 0;
 	Direct3DGetDeviceContext()->IASetVertexBuffers(0, 1, &g_pVertexBuffer, &stride, &offset);
 
+	// 中心座標を算出
+	float centerX = position.x + (patternWidth * scale) / 2;
+	float centerY = position.y + (patternHeight * scale) / 2;
+
+	// 中心座標に平行移動→回転→元の座標に平行移動
+	XMMATRIX transToCenter = XMMatrixTranslation(-centerX, -centerY, 0.0f);
+	XMMATRIX rot = XMMatrixRotationZ(-angle);
+	XMMATRIX transBack = XMMatrixTranslation(centerX, centerY, 0.0f);
+
 	// 頂点シェーダーにワールド変換行列を設定
-	Shader2DSetWorldMatrix(XMMatrixIdentity());
+	Shader2DSetWorldMatrix(transToCenter * rot * transBack);
 
 	// 頂点シェーダーにプロジェクション変換行列を設定
 	Shader2DSetProjectionMatrix(XMMatrixOrthographicOffCenterLH(0.0f, SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f, 0.0f, 1.0f));
@@ -341,9 +377,9 @@ void SpriteDraw(SpriteSheet* pSpriteSheet, const DirectX::XMFLOAT2& position, co
 /*----------------------------------------------------------------------------------------------------------
 	数値で直接描画サイズ指定
 
-	引数：テクスチャ, 左上座標, パターン番号(x, y), サイズ, カラー
+	引数：テクスチャ, 左上座標, パターン番号(x, y), サイズ, 回転角, カラー
 ----------------------------------------------------------------------------------------------------------*/
-void SpriteDraw(SpriteSheet* pSpriteSheet, const DirectX::XMFLOAT2& position, const int& patternNum, DirectX::XMFLOAT2 size, const DirectX::XMFLOAT4& color)
+void SpriteDraw(SpriteSheet* pSpriteSheet, const DirectX::XMFLOAT2& position, const int& patternNum, DirectX::XMFLOAT2 size, const float& angle, const DirectX::XMFLOAT4& color)
 {
 	pSpriteSheet->SetTexture();
 
@@ -401,8 +437,17 @@ void SpriteDraw(SpriteSheet* pSpriteSheet, const DirectX::XMFLOAT2& position, co
 	UINT offset = 0;
 	Direct3DGetDeviceContext()->IASetVertexBuffers(0, 1, &g_pVertexBuffer, &stride, &offset);
 
+	// 中心座標を算出
+	float centerX = position.x + size.x / 2;
+	float centerY = position.y + size.y / 2;
+
+	// 中心座標に平行移動→回転→元の座標に平行移動
+	XMMATRIX transToCenter = XMMatrixTranslation(-centerX, -centerY, 0.0f);
+	XMMATRIX rot = XMMatrixRotationZ(-angle);
+	XMMATRIX transBack = XMMatrixTranslation(centerX, centerY, 0.0f);
+
 	// 頂点シェーダーにワールド変換行列を設定
-	Shader2DSetWorldMatrix(XMMatrixIdentity());
+	Shader2DSetWorldMatrix(transToCenter * rot * transBack);
 
 	// 頂点シェーダーにプロジェクション変換行列を設定
 	Shader2DSetProjectionMatrix(XMMatrixOrthographicOffCenterLH(0.0f, SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f, 0.0f, 1.0f));
@@ -418,9 +463,9 @@ void SpriteDraw(SpriteSheet* pSpriteSheet, const DirectX::XMFLOAT2& position, co
 /*----------------------------------------------------------------------------------------------------------
 	拡大率で描画サイズ指定
 
-	引数：テクスチャ, 左上座標, パターン番号, 拡大率, カラー
+	引数：テクスチャ, 左上座標, パターン番号, 回転角, 拡大率, カラー
 ----------------------------------------------------------------------------------------------------------*/
-void SpriteDraw(SpriteSheet* pSpriteSheet, const DirectX::XMFLOAT2& position, const int& patternNum, const float& scale, const DirectX::XMFLOAT4& color)
+void SpriteDraw(SpriteSheet* pSpriteSheet, const DirectX::XMFLOAT2& position, const int& patternNum, const float& angle, const float& scale, const DirectX::XMFLOAT4& color)
 {
 	pSpriteSheet->SetTexture();
 
@@ -478,8 +523,17 @@ void SpriteDraw(SpriteSheet* pSpriteSheet, const DirectX::XMFLOAT2& position, co
 	UINT offset = 0;
 	Direct3DGetDeviceContext()->IASetVertexBuffers(0, 1, &g_pVertexBuffer, &stride, &offset);
 
+	// 中心座標を算出
+	float centerX = position.x + (patternWidth * scale) / 2;
+	float centerY = position.y + (patternHeight * scale) / 2;
+
+	// 中心座標に平行移動→回転→元の座標に平行移動
+	XMMATRIX transToCenter = XMMatrixTranslation(-centerX, -centerY, 0.0f);
+	XMMATRIX rot = XMMatrixRotationZ(-angle);
+	XMMATRIX transBack = XMMatrixTranslation(centerX, centerY, 0.0f);
+
 	// 頂点シェーダーにワールド変換行列を設定
-	Shader2DSetWorldMatrix(XMMatrixIdentity());
+	Shader2DSetWorldMatrix(transToCenter * rot * transBack);
 
 	// 頂点シェーダーにプロジェクション変換行列を設定
 	Shader2DSetProjectionMatrix(XMMatrixOrthographicOffCenterLH(0.0f, SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f, 0.0f, 1.0f));

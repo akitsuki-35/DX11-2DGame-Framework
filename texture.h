@@ -33,9 +33,9 @@ public:
 	// 描画
 	// サイズ指定方式でオーバーロード
 	void Draw(const DirectX::XMFLOAT2& position, const DirectX::XMFLOAT2& size, 
-		const DirectX::XMFLOAT4& color = { 1.0f, 1.0f, 1.0f, 1.0f });
-	void Draw(const DirectX::XMFLOAT2& position, const float& size = 1.0f, 
-		const DirectX::XMFLOAT4& color = { 1.0f, 1.0f, 1.0f, 1.0f });
+		const float& angle = 0.0f, const DirectX::XMFLOAT4& color = { 1.0f, 1.0f, 1.0f, 1.0f });
+	void Draw(const DirectX::XMFLOAT2& position, const float& angle = 0.0f, 
+		const float& scale = 1.0f, const DirectX::XMFLOAT4& color = { 1.0f, 1.0f, 1.0f, 1.0f });
 
 	virtual void SetTexture();
 	const DirectX::XMUINT2& GetSize() { return imageSize; }
@@ -59,15 +59,15 @@ public:
 
 	// x, y番号でパターン指定
 	void Draw(const DirectX::XMFLOAT2& position, const DirectX::XMUINT2& patternNum, const DirectX::XMFLOAT2& size,
-		const DirectX::XMFLOAT4& color = { 1.0f, 1.0f, 1.0f, 1.0f });
-	void Draw(const DirectX::XMFLOAT2& position, const DirectX::XMUINT2& patternNum, const float& size = 1.0f,
-		const DirectX::XMFLOAT4& color = { 1.0f, 1.0f, 1.0f, 1.0f });
+		const float& angle = 0.0f, const DirectX::XMFLOAT4& color = { 1.0f, 1.0f, 1.0f, 1.0f });
+	void Draw(const DirectX::XMFLOAT2& position, const DirectX::XMUINT2& patternNum, const float& angle = 0.0f,
+		const float& scale = 1.0f, const DirectX::XMFLOAT4& color = { 1.0f, 1.0f, 1.0f, 1.0f });
 
 	// パターン番号でパターン指定
 	void Draw(const DirectX::XMFLOAT2& position, const int& patternNum, const DirectX::XMFLOAT2& size,
-		const DirectX::XMFLOAT4& color = { 1.0f, 1.0f, 1.0f, 1.0f });
-	void Draw(const DirectX::XMFLOAT2& position, const int& patternNum, const float& size = 1.0f,
-		const DirectX::XMFLOAT4& color = { 1.0f, 1.0f, 1.0f, 1.0f });
+		const float& angle = 0.0f, const DirectX::XMFLOAT4& color = { 1.0f, 1.0f, 1.0f, 1.0f });
+	void Draw(const DirectX::XMFLOAT2& position, const int& patternNum, const float& angle = 0.0f,
+		const float& scale = 1.0f, const DirectX::XMFLOAT4& color = { 1.0f, 1.0f, 1.0f, 1.0f });
 
 	const int& GetPatternMax() { return patternMax; }
 	const DirectX::XMUINT2& GetPatternMatrix() { return patternMatrix; }
