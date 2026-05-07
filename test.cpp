@@ -11,6 +11,8 @@
 #include "keylogger.h"
 #include "fade.h"
 
+#include "main.h"
+
 #include "debug_memoryleak.h"
 
 #include "texture.h"
@@ -39,6 +41,6 @@ void Test::Update(double elapsed_time)
 
 void Test::Draw() const
 {
-	backGround->Draw({ 100.0f, 100.0f }, { 1280.0f, 720.0f }, angle);
+	backGround->Draw({ 100.0f, 100.0f }, { 1280.0f, 720.0f }, angle, Color::BLUE);
 	runningMan->Draw({ 100.0f, 100.0f }, 0, angle);
 }
