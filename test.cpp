@@ -13,7 +13,12 @@
 
 #include "debug_memoryleak.h"
 
+#include "main.h"
 #include "texture.h"
+
+#include <DirectXMath.h>
+
+DirectX::XMFLOAT4 g_color{ Color::RED};
 
 void Test::Initialize()
 {
@@ -40,5 +45,5 @@ void Test::Update(double elapsed_time)
 void Test::Draw() const
 {
 	backGround->Draw({ 100.0f, 100.0f }, { 1280.0f, 720.0f }, angle);
-	runningMan->Draw({ 100.0f, 100.0f }, 0, angle);
+	runningMan->Draw({ 100.0f, 100.0f }, 0, angle, 1.0f, g_color);
 }

@@ -62,7 +62,7 @@ void FadeDraw()
 		return;
 	}
 
-	g_FadeTexture->Draw({ 0.0f, 0.0f }, { SCREEN_WIDTH, SCREEN_HEIGHT }, 0.0f, g_FadeColor);
+	g_FadeTexture->Draw({ 0.0f, 0.0f }, { static_cast<float>(Screen::WIDTH), static_cast<float>(Screen::HEIGHT) }, 0.0f, g_FadeColor);
 }
 
 void FadeStart(double fadeTime, bool isFadeIn, XMFLOAT4 fadeColor)
