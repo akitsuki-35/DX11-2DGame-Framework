@@ -16,7 +16,7 @@
 
 void Game::Initialize()
 {
-	FadeStart(1.0, true);
+	Fade::Start(1.0, true);
 }
 
 void Game::Finalize()

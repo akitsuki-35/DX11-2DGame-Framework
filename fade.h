@@ -11,7 +11,8 @@
 #define FADE_H
 
 #include <DirectXMath.h>
-using namespace::DirectX;
+
+class Texture;
 
 enum FadeState
 {
@@ -22,13 +23,34 @@ enum FadeState
 	FADE_IN_END
 };
 
-void FadeInitialize();
-void FadeFinalize();
-void FadeUpdate(double elapsedTime);
-void FadeDraw();
+class Fade
+{
+private:
+	static Texture* fadeTexture;
+	static FadeState fadeState;
+	static double fadeTime;
+	static double startTime;
+	static double accumulatedtime;
+	static DirectX::XMFLOAT4 fadeColor;
 
-void FadeStart(double fadeTime, bool isFadeIn, XMFLOAT4 fadeColor = { 0.0f,0.0f,0.0f,1.0f });
+public:
+	static void Initialize();
+	static void Finalize();
+	static void Update(double elapsedTime);
+	static void Draw();
 
-const FadeState GetFadeState();
+	static void Start(double time, bool isFadeIn, DirectX::XMFLOAT4 color = { 0.0f,0.0f,0.0f,1.0f });
+
+	static const FadeState GetState();
+};
+
+//void FadeInitialize();
+//void FadeFinalize();
+//void FadeUpdate(double elapsedTime);
+//void FadeDraw();
+//
+//void FadeStart(double fadeTime, bool isFadeIn, XMFLOAT4 fadeColor = { 0.0f,0.0f,0.0f,1.0f });
+//
+//const FadeState GetFadeState();
 
 #endif // !FADE_H

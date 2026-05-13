@@ -134,8 +134,8 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 		Direct3DGetBackBufferWidth(), Direct3DGetBackBufferHeight(),
 		0.0f, 0.0f, 0, 0, 0.0f, 0.0f);
 
-	FadeInitialize();
-	FadeStart(0.0f, false);
+	Fade::Initialize();
+	Fade::Start(0.0f, false);
 	Manager::Initialize();
 
 	//ŽžŠÔŒv‘ª—p
@@ -181,12 +181,12 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 				KeyLogger::Update();
 
 				Manager::Update(elapsedTime);
-				FadeUpdate(elapsedTime);
+				Fade::Update(elapsedTime);
 
 				Direct3DClear();
 
 				Manager::Draw();
-				FadeDraw();
+				Fade::Draw();
 
 #if defined(DEBUG) || defined(_DEBUG)
 
@@ -210,7 +210,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 	} while (msg.message != WM_QUIT);
 
 	Manager::Finalize();
-	FadeFinalize();
+	Fade::Finalize();
 	CollisionDrawFinalize();
 	SpriteFinalize();
 	Shader2DFinalize();
