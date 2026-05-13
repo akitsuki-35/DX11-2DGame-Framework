@@ -106,9 +106,9 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
 
-	SystemTimerInitialize();
+	SystemTimer::Initialize();
 	AudioInitialize();
-	KeyLoggerInitialize();
+	KeyLogger::Initialize();
 	MouseInitialize(hWnd);
 
 	//各種初期化
@@ -145,7 +145,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 	double currentTime = 0.0;
 	ULONG frameCount = 0;
 
-	execLastTime = fpsLastTime = GetSystemTimer();
+	execLastTime = fpsLastTime = SystemTimer::GetTime();
 
 	//メッセージ＆ゲームループ
 	MSG msg;
@@ -159,7 +159,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 		}
 		else //ゲーム処理
 		{
-			currentTime = GetSystemTimer();
+			currentTime = SystemTimer::GetTime();
 			double elapsedTime = currentTime - fpsLastTime;
 
 			if (elapsedTime >= 1.0)
@@ -178,7 +178,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 			{
 				execLastTime = currentTime;
 
-				KeyLoggerUpdate();
+				KeyLogger::Update();
 
 				Manager::Update(elapsedTime);
 				FadeUpdate(elapsedTime);

@@ -39,7 +39,7 @@ void Title::Update(double elapsed_time)
 		break;
 
 	case TITLE_KEYINPUT_WAIT:
-		if (KeyIsTrigger(KK_ENTER))
+		if (KeyLogger::IsTrigger(KK_ENTER))
 		{
 			state = TITLE_KEYINPUT_ACTION;
 			keyInputTime = accumulatedTime;

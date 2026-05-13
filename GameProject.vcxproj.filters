@@ -110,6 +110,9 @@
     <ClCompile Include="test.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="easing.cpp">
+      <Filter>ソース ファイル\Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h">
@@ -183,6 +186,9 @@
     </ClInclude>
     <ClInclude Include="scene.h">
       <Filter>ヘッダー ファイル\System</Filter>
+    </ClInclude>
+    <ClInclude Include="easing.h">
+      <Filter>ヘッダー ファイル\Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

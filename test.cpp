@@ -34,10 +34,10 @@ void Test::Finalize()
 
 void Test::Update(double elapsed_time)
 {
-	if (KeyIsPressd(KK_A)) {
+	if (KeyLogger::IsPressd(KK_A)) {
 		angle += 0.01f;
 	}
-	if (KeyIsPressd(KK_D)) {
+	if (KeyLogger::IsPressd(KK_D)) {
 		angle -= 0.01f;
 	}
 }
