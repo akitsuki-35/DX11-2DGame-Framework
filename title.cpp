@@ -18,7 +18,7 @@
 
 void Title::Initialize()
 {
-	FadeStart(1.0f, true);
+	Fade::GetInstance().Start(1.0f, true);
 	state = TITLE_FADE_IN;
 }
 
@@ -33,13 +33,13 @@ void Title::Update(double elapsed_time)
 	switch (state)
 	{
 	case TITLE_FADE_IN:
-		if (GetFadeState() == FADE_IN_END) {
+		if (Fade::GetInstance().GetState() == Fade::FADE_IN_END) {
 			state = TITLE_KEYINPUT_WAIT;
 		}
 		break;
 
 	case TITLE_KEYINPUT_WAIT:
-		if (KeyIsTrigger(KK_ENTER))
+		if (KeyLogger::IsTrigger(KK_ENTER))
 		{
 			state = TITLE_KEYINPUT_ACTION;
 			keyInputTime = accumulatedTime;
@@ -51,12 +51,12 @@ void Title::Update(double elapsed_time)
 	case TITLE_KEYINPUT_ACTION:
 		if (accumulatedTime - keyInputTime > 1.0) {
 			state = TITLE_FADE_OUT;
-			FadeStart(1.0f, false);
+			Fade::GetInstance().Start(1.0f, false);
 		}
 		break;
 
 	case TITLE_FADE_OUT:
-		if (GetFadeState() == FADE_OUT_END) {
+		if (Fade::GetInstance().GetState() == Fade::FADE_OUT_END) {
 			// ƒQ[ƒ€ƒV[ƒ“‚É‘JˆÚ
 			Manager::SetNextScene(new Game);
 		}

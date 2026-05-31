@@ -16,7 +16,7 @@
 
 void Game::Initialize()
 {
-	FadeStart(1.0, true);
+	Fade::GetInstance().Start(1.0, true);
 }
 
 void Game::Finalize()

@@ -14,6 +14,9 @@
 #include <sstream>
 #include <Xinput.h>
 
+// ImGui
+#include <imgui_impl_win32.h>
+
 // システム関連インクルード
 #include "direct3d.h"
 #include "main.h"
@@ -32,6 +35,7 @@
 #include "mouse.h"
 
 // デバッグ関連インクルード
+#include "debugger.h"
 #include "debug_text.h"
 #include "debug_collisiondraw.h"
 #include "debug_memoryleak.h"
@@ -48,6 +52,7 @@ static constexpr char TITLE[]{ "Game Window" }; //タイトルバーのテキスト
 	プロトタイプ宣言
 ----------------------------------------------------------------------------------------------------------*/
 LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 /*----------------------------------------------------------------------------------------------------------
 	メイン
@@ -102,13 +107,13 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 
 	// タイトルバーと枠を削除
 	SetWindowLongPtr(hWnd, GWL_STYLE, windowStyle &= ~(WS_CAPTION | WS_THICKFRAME));
-	
+
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
 
-	SystemTimerInitialize();
+	SystemTimer::Initialize();
 	AudioInitialize();
-	KeyLoggerInitialize();
+	KeyLogger::Initialize();
 	MouseInitialize(hWnd);
 
 	//各種初期化
@@ -124,18 +129,22 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 		}
 		else
 		{
-			SpriteInitialize();
+			Sprite::GetInstance().Initialize();
 			CollisionDrawInitialize();
 		}
 	}
+
+#if defined(DEBUG) || defined(_DEBUG)
+	Debugger::GetInstance().Initialize(hWnd);
 
 	dText::DebugText dt(Direct3DGetDevice(), Direct3DGetDeviceContext(),
 		L"Resources/Textures/Common/text.png",
 		Direct3DGetBackBufferWidth(), Direct3DGetBackBufferHeight(),
 		0.0f, 0.0f, 0, 0, 0.0f, 0.0f);
+#endif // defined(DEBUG) || defined(_DEBUG)
 
-	FadeInitialize();
-	FadeStart(0.0f, false);
+	Fade::GetInstance().Initialize();
+	Fade::GetInstance().Start(0.0f, false);
 	Manager::Initialize();
 
 	//時間計測用
@@ -145,7 +154,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 	double currentTime = 0.0;
 	ULONG frameCount = 0;
 
-	execLastTime = fpsLastTime = GetSystemTimer();
+	execLastTime = fpsLastTime = SystemTimer::GetTime();
 
 	//メッセージ＆ゲームループ
 	MSG msg;
@@ -159,7 +168,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 		}
 		else //ゲーム処理
 		{
-			currentTime = GetSystemTimer();
+			currentTime = SystemTimer::GetTime();
 			double elapsedTime = currentTime - fpsLastTime;
 
 			if (elapsedTime >= 1.0)
@@ -178,15 +187,15 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 			{
 				execLastTime = currentTime;
 
-				KeyLoggerUpdate();
+				KeyLogger::Update();
 
 				Manager::Update(elapsedTime);
-				FadeUpdate(elapsedTime);
+				Fade::GetInstance().Update(elapsedTime);
 
 				Direct3DClear();
 
 				Manager::Draw();
-				FadeDraw();
+				Fade::GetInstance().Draw();
 
 #if defined(DEBUG) || defined(_DEBUG)
 
@@ -195,6 +204,9 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 				dt.SetText(ss.str().c_str());
 				dt.Draw();
 				dt.Clear();
+
+				Debugger::GetInstance().Update(elapsedTime);
+				Debugger::GetInstance().Draw();
 
 #endif // defined(DEBUG) || defined(_DEBUG)
 
@@ -210,9 +222,14 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 	} while (msg.message != WM_QUIT);
 
 	Manager::Finalize();
-	FadeFinalize();
+	Fade::GetInstance().Finalize();
+
+#if defined(DEBUG) || defined(_DEBUG)
+	Debugger::GetInstance().Finalize();
 	CollisionDrawFinalize();
-	SpriteFinalize();
+#endif // defined(DEBUG) || defined(_DEBUG)
+	
+	Sprite::GetInstance().Finalize();
 	Shader2DFinalize();
 	Direct3DFinalize();
 	MouseFinalize();
@@ -226,6 +243,12 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 ----------------------------------------------------------------------------------------------------------*/
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+#if defined(DEBUG) || defined(_DEBUG)
+	// ImGuiメッセージ処理
+	if (ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam))
+		return true;
+#endif // defined(DEBUG) || defined(_DEBUG)
+
 	switch (message)
 	{
 	case WM_ACTIVATEAPP:

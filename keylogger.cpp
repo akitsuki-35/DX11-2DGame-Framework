@@ -9,43 +9,43 @@
 */
 #include "keylogger.h"
 
-static KeyboardState g_PtevState = {};
-static KeyboardState g_TriggerState = {};
-static KeyboardState g_ReleaseState = {};
+KeyboardState KeyLogger::ptevState;
+KeyboardState KeyLogger::triggerState;
+KeyboardState KeyLogger::releaseState;
 
-void KeyLoggerInitialize()
+void KeyLogger::Initialize()
 {
 	KeyboardInitialize();
 }
 
-void KeyLoggerUpdate()
+void KeyLogger::Update()
 {
 	const KeyboardState* currentState = GetKeyboardState();
 
-	LPBYTE pt = (LPBYTE)&g_TriggerState;
+	LPBYTE pt = (LPBYTE)&triggerState;
 	LPBYTE pn = (LPBYTE)currentState;
-	LPBYTE po = (LPBYTE)&g_PtevState;
-	LPBYTE pr = (LPBYTE)&g_ReleaseState;
+	LPBYTE po = (LPBYTE)&ptevState;
+	LPBYTE pr = (LPBYTE)&releaseState;
 
-	for (int i = 0; i < sizeof(KeyboardState); i++){
+	for (int i = 0; i < sizeof(KeyboardState); i++) {
 		pt[i] = (po[i] ^ pn[i]) & pn[i];
 		pr[i] = (po[i] ^ pn[i]) & ~pn[i];
 	}
 
-	g_PtevState = *currentState;
+	ptevState = *currentState;
 }
 
-bool KeyIsPressd(Keys key)
+bool KeyLogger::IsPressd(Keys key)
 {
 	return IsKeyDown(key);
 }
 
-bool KeyIsTrigger(Keys key)
+bool KeyLogger::IsTrigger(Keys key)
 {
-	return IsKeyDown(key, &g_TriggerState);
+	return IsKeyDown(key, &triggerState);
 }
 
-bool KeyIsRelease(Keys key)
+bool KeyLogger::IsRelease(Keys key)
 {
-	return IsKeyDown(key, &g_ReleaseState);
+	return IsKeyDown(key, &releaseState);
 }

@@ -12,11 +12,20 @@
 
 #include "keyboard.h"
 
-void KeyLoggerInitialize();
-void KeyLoggerUpdate();
+class KeyLogger
+{
+private:
+	static KeyboardState ptevState;
+	static KeyboardState triggerState;
+	static KeyboardState releaseState;
 
-bool KeyIsPressd(Keys key);
-bool KeyIsTrigger(Keys key);
-bool KeyIsRelease(Keys key);
+public:
+	static void Initialize();
+	static void Update();
+
+	static bool IsPressd(Keys key);
+	static bool IsTrigger(Keys key);
+	static bool IsRelease(Keys key);
+};
 
 #endif // KEYLOGGER_H

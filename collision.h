@@ -15,8 +15,6 @@
 /*＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 	衝突防止のためnamespace使用
 	using namespaceしないこと
-
-	※サークルコリジョン不完全のため、基本的にボックスコリジョン使用推奨
 ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝*/
 /*----------------------------------------------------------------------------------------------------------
 	前方宣言
@@ -32,31 +30,33 @@ namespace Collision {
 class CollisionBase
 {
 protected:
+	DirectX::XMFLOAT2 position{}; // コリジョン左上座標;
 	DirectX::XMFLOAT2 center{}; // コリジョン中心座標
 	DirectX::XMFLOAT2 collisionSize{}; // コリジョンサイズ
 
 public:
-	CollisionBase(const DirectX::XMFLOAT2& position, const DirectX::XMFLOAT2& collisionSize,
-		const DirectX::XMFLOAT2& objectSize = { 0.0f, 0.0f })
-		: collisionSize(collisionSize) {
-		SetCenter(position, objectSize);
+	CollisionBase(const DirectX::XMFLOAT2& position, const DirectX::XMFLOAT2& collisionSize)
+		: position(position), collisionSize(collisionSize) {
+		SetCenter(position);
 	}
 	virtual ~CollisionBase() = default;
 
-	void SetCenter(const DirectX::XMFLOAT2& offset, const DirectX::XMFLOAT2& objectSize = { 0.0f, 0.0f }) {
-		if (objectSize.x && objectSize.y) {
-			center = { offset.x + objectSize.x / 2, offset.y + objectSize.y / 2 };
-		}
-		else {
-			center = { offset.x + collisionSize.x / 2, offset.y + collisionSize.y / 2 };
-		}
+	void SetCenter(const DirectX::XMFLOAT2& offset) {
+		center = { offset.x + collisionSize.x / 2, offset.y + collisionSize.y / 2 };
+	}
+
+	void SetSize(const DirectX::XMFLOAT2& size) {
+		collisionSize = size;
+		SetCenter(position);
 	}
 
 	virtual bool IsOverlap(const Collision::Circle*) const { return false; }
 	virtual bool IsOverlap(const Collision::Box*) const { return false; }
+	virtual bool IsOverlap(const DirectX::XMFLOAT2&) const { return false; }
 
-	virtual void Move(const DirectX::XMFLOAT2& currentPos, const DirectX::XMFLOAT2& objectSize = { 0.0f, 0.0f }) {
-		SetCenter(currentPos, objectSize);
+	virtual void Move(const DirectX::XMFLOAT2& currentPos) {
+		DirectX::XMFLOAT2 newPos = currentPos;
+		SetCenter(newPos);
 	}
 	virtual const DirectX::XMFLOAT2& GetCenter() const { return center; }
 
@@ -77,9 +77,8 @@ private:
 	float radius{};
 
 public:
-	Circle(const DirectX::XMFLOAT2& position, const DirectX::XMFLOAT2& collisionSize,
-		const DirectX::XMFLOAT2& objectSize = { 0.0f, 0.0f })
-		: CollisionBase(position, collisionSize, objectSize) {
+	Circle(const DirectX::XMFLOAT2& position, const DirectX::XMFLOAT2& collisionSize)
+		: CollisionBase(position, collisionSize) {
 		if (collisionSize.x / 2 <= collisionSize.y / 2) {
 			radius = collisionSize.x / 2;
 		}
@@ -91,8 +90,11 @@ public:
 	bool IsOverlap(const Circle* target) const override;
 	bool IsOverlap(const Box* target) const override;
 
-	virtual void Move(const DirectX::XMFLOAT2& currentPos, const DirectX::XMFLOAT2& objectSize = { 0.0f, 0.0f }) override {
-		SetCenter(currentPos, objectSize);
+	// カーソル用
+	virtual bool IsOverlap(const DirectX::XMFLOAT2& target) const override;
+
+	virtual void Move(const DirectX::XMFLOAT2& currentPos) override {
+		SetCenter(currentPos);
 	}
 
 	void Draw() const override;
@@ -110,9 +112,8 @@ private:
 	DirectX::XMFLOAT2 max{};
 
 public:
-	Box(const DirectX::XMFLOAT2& position, const DirectX::XMFLOAT2& collisionSize,
-		const DirectX::XMFLOAT2& objectSize = { 0.0f, 0.0f })
-		: CollisionBase(position, collisionSize, objectSize) {
+	Box(const DirectX::XMFLOAT2& position, const DirectX::XMFLOAT2& collisionSize)
+		: CollisionBase(position, collisionSize) {
 		min = { center.x - (collisionSize.x / 2), center.y - (collisionSize.y / 2) };
 		max = { center.x + (collisionSize.x / 2), center.y + (collisionSize.y / 2) };
 	}
@@ -120,8 +121,20 @@ public:
 	bool IsOverlap(const Circle* target) const override;
 	bool IsOverlap(const Box* target) const override;
 
-	void Move(const DirectX::XMFLOAT2& currentPos, const DirectX::XMFLOAT2& objectSize = { 0.0f, 0.0f }) override {
-		SetCenter(currentPos, objectSize);
+	// カーソル用
+	virtual bool IsOverlap(const DirectX::XMFLOAT2& target) const override;
+
+	void Move(const DirectX::XMFLOAT2& currentPos) override {
+		float x = position.x - currentPos.x;
+		float y = position.y - currentPos.y;
+
+		x = currentPos.x - x;
+		y = currentPos.y - y;
+
+		position = { x, y };
+		SetCenter(position);
+
+		//SetCenter(currentPos);
 		min = { center.x - (collisionSize.x / 2), center.y - (collisionSize.y / 2) };
 		max = { center.x + (collisionSize.x / 2), center.y + (collisionSize.y / 2) };
 	}
