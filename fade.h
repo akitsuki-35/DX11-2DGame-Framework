@@ -11,37 +11,47 @@
 #define FADE_H
 
 #include <DirectXMath.h>
-
-class Texture;
-
-enum FadeState
-{
-	NONE,
-	FADE_OUT,
-	FADE_OUT_END,
-	FADE_IN,
-	FADE_IN_END
-};
+using namespace::DirectX;
 
 class Fade
 {
+public:
+	enum State
+	{
+		NONE,
+		FADE_OUT,
+		FADE_OUT_END,
+		FADE_IN,
+		FADE_IN_END
+	};
+
 private:
-	static Texture* fadeTexture;
-	static FadeState fadeState;
-	static double fadeTime;
-	static double startTime;
+	static class Texture* texture;
+	static State fadeState;
+	static double time;
 	static double accumulatedtime;
-	static DirectX::XMFLOAT4 fadeColor;
+	static double startTime;
+	static XMFLOAT4 color;
+
+	Fade() {}
+	Fade(const Fade&);
+	Fade& operator=(const Fade&);
+	~Fade() {};
 
 public:
-	static void Initialize();
-	static void Finalize();
-	static void Update(double elapsedTime);
-	static void Draw();
+	static Fade& GetInstance() {
+		static Fade instance;
+		return instance;
+	}
 
-	static void Start(double time, bool isFadeIn, DirectX::XMFLOAT4 color = { 0.0f,0.0f,0.0f,1.0f });
+	const void Initialize();
+	const void Finalize();
+	const void Update(double elapsedTime);
+	const void Draw();
 
-	static const FadeState GetState();
+	const void Start(const double& fadeTime, const bool& isFadeIn,
+		const XMFLOAT4& fadeColor = { 0.0f,0.0f,0.0f,1.0f });
+	const Fade::State GetState() { return fadeState; }
 };
 
 //void FadeInitialize();

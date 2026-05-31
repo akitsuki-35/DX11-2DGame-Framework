@@ -19,7 +19,7 @@ class Animation
 {
 private:
 	SpriteSheet* pSpriteSheet;
-	int patternNum{ 0 };
+	//int patternNum{ 0 };
 	DirectX::XMUINT2 startPos{};
 	double perSecond{};
 	double accumulatedTime{ 0.0f };
@@ -31,12 +31,9 @@ public:
 		: pSpriteSheet(pSpriteSheet), startPos(startPos), perSecond(perSecond), isLoop(isLoop) {}
 
 	void Update(double elapsedTime);
-	void Draw(const DirectX::XMFLOAT2& position, const DirectX::XMFLOAT2& size, const float& angle = 0.0f,
-		const DirectX::XMFLOAT4& color = { 1.0f,1.0f,1.0f,1.0f }) const;
-	void Draw(const DirectX::XMFLOAT2& position, const float& angle = 0.0f,
-		const float& scale = 1.0f, const DirectX::XMFLOAT4& color = { 1.0f,1.0f,1.0f,1.0f }) const;
+	void Draw() const;
 
-	bool IsLoop() { return isLoop; }
+	bool IsLoop() const { return isLoop; }
 	bool IsStoped() const { return isStoped; }
 };
 

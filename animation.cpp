@@ -19,10 +19,18 @@ void Animation::Update(double elapsedTime)
 
 	accumulatedTime += elapsedTime;
 
-	if (accumulatedTime >= perSecond) {
-		patternNum = (patternNum + 1) % pSpriteSheet->GetPatternMax();
+	int currentPattern = pSpriteSheet->GetCurrentPattern();
+	int patternMax = pSpriteSheet->GetPatternMax();
 
-		if (patternNum == pSpriteSheet->GetPatternMax() - 1) {
+	if (accumulatedTime >= perSecond) {
+		//patternNum = (patternNum + 1) % pSpriteSheet->GetPatternMax();
+		pSpriteSheet->SetPattern((currentPattern += 1) % patternMax);
+
+		//if (patternNum == pSpriteSheet->GetPatternMax() - 1) {
+		//	if (!isLoop) isStoped = true;
+		//}
+
+		if (currentPattern == patternMax - 1) {
 			if (!isLoop) isStoped = true;
 		}
 
@@ -30,12 +38,7 @@ void Animation::Update(double elapsedTime)
 	}
 }
 
-void Animation::Draw(const DirectX::XMFLOAT2& position, const DirectX::XMFLOAT2& size, const float& angle, const DirectX::XMFLOAT4& color) const
+void Animation::Draw() const
 {
-	pSpriteSheet->Draw(position, patternNum, size, angle, color);
-}
-
-void Animation::Draw(const DirectX::XMFLOAT2& position, const float& angle, const float& scale, const DirectX::XMFLOAT4& color) const
-{
-	pSpriteSheet->Draw(position, patternNum, angle, scale, color);
+	pSpriteSheet->Draw();
 }

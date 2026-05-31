@@ -50,6 +50,18 @@ bool Collision::Circle::IsOverlap(const Box* target) const
         || (distance[2] <= radius) || (distance[3] <= radius);
 }
 
+bool Collision::Circle::IsOverlap(const DirectX::XMFLOAT2& target) const
+{
+    // ‚Â‚­‚è‚©‚¯
+    //float centerDistance = GetDistance(target, center);
+
+    //if (centerDistance <= radius + target.x) {
+    //    return true;
+    //}
+
+    return false;
+}
+
 void Collision::Circle::Draw() const
 {
 #if defined(DEBUG) || defined(_DEBUG)
@@ -71,6 +83,14 @@ bool Collision::Box::IsOverlap(const Box* target) const
         && max.x > target->min.x
         && min.y < target->max.y
         && max.y > target->min.y;
+}
+
+bool Collision::Box::IsOverlap(const DirectX::XMFLOAT2& target) const
+{
+    return min.x < target.x
+        && max.x > target.x
+        && min.y < target.y
+        && max.y > target.y;
 }
 
 void Collision::Box::Draw() const

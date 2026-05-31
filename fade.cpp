@@ -12,33 +12,30 @@
 #include "sprite.h"
 #include "texture.h"
 #include "direct3d.h"
-using namespace DirectX;
 
 #include "debug_memoryleak.h"
 
-Texture* Fade::fadeTexture;
-FadeState Fade::fadeState;
-double Fade::fadeTime;
-double Fade::accumulatedtime;
-double Fade::startTime;
-XMFLOAT4 Fade::fadeColor;
+Texture* Fade::texture{ nullptr };
+Fade::State Fade::fadeState{ Fade::State::FADE_IN };
+double Fade::time{};
+double Fade::accumulatedtime{ 0.0 };
+double Fade::startTime{ 0.0 };
+XMFLOAT4 Fade::color{ 0.0f, 0.0f, 0.0f, 1.0f };
 
-void Fade::Initialize()
+const void Fade::Initialize()
 {
-	fadeTexture = new Texture(L"Resources/Textures/Common/white.png");
-
-	fadeState = FADE_IN;
+	texture = new Texture(L"Resources/Textures/Common/white.png", { 0.0f, 0.0f },
+		{ Screen::WIDTH, Screen::HEIGHT }, 0, color);
+	fadeState = Fade::State::FADE_IN;
 	accumulatedtime = 0.0;
-	startTime = 0.0;
-	fadeColor = { 0.0f, 0.0f, 0.0f, 1.0f };
 }
 
-void Fade::Finalize()
+const void Fade::Finalize()
 {
-	delete fadeTexture;
+	delete texture;
 }
 
-void Fade::Update(double elapsedTime)
+const void Fade::Update(double elapsedTime)
 {
 	// 時間計測とステートの管理
 	if (fadeState == NONE || fadeState == FADE_OUT_END || fadeState == FADE_IN_END) {
@@ -49,36 +46,31 @@ void Fade::Update(double elapsedTime)
 
 	double lifeTime = accumulatedtime - startTime;
 
-	float alpha = (float)(lifeTime / fadeTime);
+	float alpha = (float)(lifeTime / time);
 
-	fadeColor.w = fadeState == FADE_IN ? 1.0f - alpha : alpha;
+	color.w = fadeState == FADE_IN ? 1.0f - alpha : alpha;
+	texture->SetColor(color);
 
-	if (fadeTime <= lifeTime) {
+	if (time <= lifeTime) {
 		fadeState = fadeState == FADE_IN ? FADE_IN_END : FADE_OUT_END;
 	}
 }
 
-void Fade::Draw()
+const void Fade::Draw()
 {
 	if (fadeState == NONE || fadeState == FADE_IN_END) {
 		return;
 	}
 
-	fadeTexture->Draw({ 0.0f, 0.0f },
-		{ static_cast<float>(Screen::WIDTH), static_cast<float>(Screen::HEIGHT) }, 0.0f, fadeColor);
+	texture->Draw();
 }
 
-void Fade::Start(double time, bool isFadeIn, DirectX::XMFLOAT4 color)
+const void Fade::Start(const double& fadeTime, const bool& isFadeIn, const XMFLOAT4& fadeColor)
 {
-	fadeTime = time;
+	time = fadeTime;
 	fadeState = isFadeIn ? FADE_IN : FADE_OUT;
 
 	startTime = accumulatedtime;
 
-	color = color;
-}
-
-const FadeState Fade::GetState()
-{
-	return fadeState;
+	texture->SetColor(color = fadeColor);
 }

@@ -18,11 +18,11 @@
 
 #include <DirectXMath.h>
 
-DirectX::XMFLOAT4 g_color{ Color::PURPLE };
+DirectX::XMFLOAT4 g_color{ Color::RED };
 
 void Test::Initialize()
 {
-	backGround = new Texture(L"Resources/Textures/_Test/black.png");
+	backGround = new Texture(L"Resources/Textures/_Test/background1.png");
 	runningMan = new SpriteSheet(L"Resources/Textures/_Test/runningman001.png", { 5, 2 });
 }
 
@@ -44,6 +44,6 @@ void Test::Update(double elapsed_time)
 
 void Test::Draw() const
 {
-	backGround->Draw({ 100.0f, 100.0f }, { 1280.0f, 720.0f }, angle, g_color);
-	runningMan->Draw({ 100.0f, 100.0f }, 0, angle, 1.0f, g_color);
+	backGround->Draw();
+	//runningMan->Draw({ 100.0f, 100.0f }, 0, angle, 1.0f, g_color);
 }
