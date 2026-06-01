@@ -2,7 +2,7 @@
 *
 *	ImGuiデバッガー[debugger.h]
 *
-* 　Author  : Asuka Kuroda
+* 　Author  : @akitsuki-35（https://github.com/akitsuki-35）
 * 　Date	: 2026/05/21
 * ----------------------------------------------------------------------------------------------------------
 *
@@ -10,8 +10,14 @@
 #ifndef DEBUGGER_H
 #define DEBUGGER_H
 
+#if defined(DEBUG) || defined(_DEBUG)
+
 #include <Windows.h>
 
+/*＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+	デバッガークラス
+	Initialize, Fainalize, Draw変更厳禁
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝*/
 class Debugger
 {
 private:
@@ -34,7 +40,8 @@ public:
 
 	// ===== デバッグウィンドウ関数をここに追加 =====
 	const void CursorDebug(); // カーソル座標と状態のデバッグ
-	//const void DrawDebug();
+	const void CursorColorDebug();
 };
+#endif // defined(DEBUG) || defined(_DEBUG)
 
 #endif // DEBUGGER_H

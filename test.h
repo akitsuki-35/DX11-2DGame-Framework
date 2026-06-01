@@ -19,9 +19,6 @@ class Test : public Scene
 {
 private:
 	// テスト用のメンバ変数をここに追加
-	Texture* backGround{ nullptr };
-	SpriteSheet* runningMan{ nullptr };
-	float angle{ 0.0f };
 
 public:
 	void Initialize() override;
