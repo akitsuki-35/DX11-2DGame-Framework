@@ -98,7 +98,7 @@
     <ClCompile Include="title.cpp">
       <Filter>ソース ファイル\Title</Filter>
     </ClCompile>
-    <ClCompile Include="debug ostream.cpp">
+    <ClCompile Include="debug_ostream.cpp">
       <Filter>ソース ファイル\Debug</Filter>
     </ClCompile>
     <ClCompile Include="debug_text.cpp">

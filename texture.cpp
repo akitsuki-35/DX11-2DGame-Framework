@@ -1,12 +1,11 @@
-/*＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+/*============================================================
+*	@file	 : texture.cpp
+*	@brief	 : テクスチャ管理
 *
-*	テクスチャ管理[texture.cpp]
-*
-* 　Author  : Asuka Kuroda
-* 　Date	: 2026/04/13
-* ----------------------------------------------------------------------------------------------------------
-*
-＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝*/
+* 　@Author  : @akitsuki-35（https://github.com/akitsuki-35）
+* 　@Date	 : 2026/04/13
+*	@Updated : 2026/06/02
+*============================================================*/
 #include "texture.h"
 #include "sprite.h"
 #include "direct3d.h"
@@ -72,6 +71,7 @@ void Texture::SetTexture()
 SpriteSheet::SpriteSheet(const wchar_t* pFileName, const DirectX::XMUINT2& patternMatrix, const DirectX::XMFLOAT2& position, const DirectX::XMFLOAT2& size, const float& rotate, const DirectX::XMFLOAT4& color, bool isMipMap)
 	:Texture(pFileName, position, size, rotate, color, isMipMap), patternMatrix(patternMatrix)
 {
+	// 総パターン数とパターンサイズをセット
 	patternMax = patternMatrix.x * patternMatrix.y;
 	patternSize.x = originalSize.x / patternMatrix.x;
 	patternSize.y = originalSize.y / patternMatrix.y;

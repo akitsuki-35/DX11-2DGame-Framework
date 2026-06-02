@@ -1,12 +1,11 @@
-/*＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+/*============================================================
+*	@file	 : main.cpp
+*	@brief	 : メイン
 *
-*	メイン[main.cpp]
-*
-* 　Author  : Asuka Kuroda
-* 　Date	: 2026/03/28
-* ----------------------------------------------------------------------------------------------------------
-*
-＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝*/
+* 　@Author  : @akitsuki-35（https://github.com/akitsuki-35）
+* 　@Date	 : 2026/03/28
+*	@Updated : 2026/06/02
+*============================================================*/
 #include <SDKDDKVer.h>
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
@@ -42,21 +41,22 @@
 
 // コントローラ用ライブラリ
 #pragma comment(lib, "xinput.lib")
-/*----------------------------------------------------------------------------------------------------------
+
+/*------------------------------------------------------------
 	ウィンドウ情報
-----------------------------------------------------------------------------------------------------------*/
+------------------------------------------------------------*/
 static constexpr char WINDOW_CLASS[]{ "GameWindow" }; //メインウィンドウクラス名
 static constexpr char TITLE[]{ "Game Window" }; //タイトルバーのテキスト
 
-/*----------------------------------------------------------------------------------------------------------
-	プロトタイプ宣言
-----------------------------------------------------------------------------------------------------------*/
+/*------------------------------------------------------------
+	ローカル関数 プロトタイプ宣言
+------------------------------------------------------------*/
 LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-/*----------------------------------------------------------------------------------------------------------
-	メイン
-----------------------------------------------------------------------------------------------------------*/
+/*------------------------------------------------------------
+	メイン関数
+------------------------------------------------------------*/
 int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstance*/, _In_ LPSTR /*lpCmdLine*/, _In_ int nCmdShow)
 {
 	// メモリリーク検出有効化
@@ -116,7 +116,9 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 	KeyLogger::Initialize();
 	MouseInitialize(hWnd);
 
-	//各種初期化
+/*------------------------------------------------------------
+	各種初期化
+------------------------------------------------------------*/
 	if (!Direct3DInitialize(hWnd))
 	{
 		PostQuitMessage(0);
@@ -147,7 +149,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 	Fade::GetInstance().Start(0.0f, false);
 	Manager::Initialize();
 
-	//時間計測用
+	// 時間計測
 	double fps = 0.0;
 	double execLastTime = 0.0;
 	double fpsLastTime = 0.0;
@@ -156,7 +158,9 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 
 	execLastTime = fpsLastTime = SystemTimer::GetTime();
 
-	//メッセージ＆ゲームループ
+/*------------------------------------------------------------
+	メッセージ＆ゲームループ
+------------------------------------------------------------*/
 	MSG msg;
 
 	do
@@ -197,18 +201,18 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 				Manager::Draw();
 				Fade::GetInstance().Draw();
 
-#if defined(DEBUG) || defined(_DEBUG)
-
+		#if defined(DEBUG) || defined(_DEBUG)
+				// fps表示
 				std::stringstream ss;
 				ss << "fps:" << fps << std::endl;
 				dt.SetText(ss.str().c_str());
 				dt.Draw();
 				dt.Clear();
 
+				// デバッグウィンドウ描画
 				Debugger::GetInstance().Update(elapsedTime);
 				Debugger::GetInstance().Draw();
-
-#endif // defined(DEBUG) || defined(_DEBUG)
+		#endif // defined(DEBUG) || defined(_DEBUG)
 
 				Direct3DPresent();
 
@@ -221,6 +225,9 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 
 	} while (msg.message != WM_QUIT);
 
+/*------------------------------------------------------------
+	終了処理
+------------------------------------------------------------*/
 	Manager::Finalize();
 	Fade::GetInstance().Finalize();
 

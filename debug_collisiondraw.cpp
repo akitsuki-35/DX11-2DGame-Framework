@@ -1,12 +1,11 @@
-/*＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+/*============================================================
+*	@file	 : debug_collisiondraw.cpp
+*	@brief	 : コリジョン可視化
 *
-*	コリジョン可視化[debug_collisiondraw.cpp]
-*
-* 　Author  : Asuka Kuroda
-* 　Date	: 2026/04/20
-* ----------------------------------------------------------------------------------------------------------
-*	デバッグビルドのみ動作
-＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝*/
+* 　@Author  : @akitsuki-35（https://github.com/akitsuki-35）
+* 　@Date	 : 2026/04/20
+*	@Updated : 2026/06/02
+*============================================================*/
 #include "debug_collisiondraw.h"
 #include "direct3d.h"
 #include "shader2d.h"
@@ -15,15 +14,18 @@
 #include <memory>
 using namespace DirectX;
 
+/*------------------------------------------------------------
+	グローバル変数定義
+------------------------------------------------------------*/
 static constexpr int CIRCLE_NUM_VERTEX{ 9 }; // 頂点数
 static ID3D11Buffer* g_pCircleVertexBuffer{ nullptr }; // 頂点バッファ
-
 static constexpr int BOX_NUM_VERTEX{ 5 }; // 頂点数
 static ID3D11Buffer* g_pBoxVertexBuffer{ nullptr }; // 頂点バッファ
-
 static Texture* g_pTexture{ nullptr };
 
-// 頂点構造体
+/*------------------------------------------------------------
+	頂点構造体
+------------------------------------------------------------*/
 struct Vertex
 {
 	XMFLOAT3 position; // 頂点座標
@@ -65,10 +67,13 @@ void CollisionDrawFinalize()
 #endif
 }
 
+/*------------------------------------------------------------
+	サークルコリジョン描画
+------------------------------------------------------------*/
 void CircleCollisionDraw(const DirectX::XMFLOAT2& center, const float& radius, const DirectX::XMFLOAT4& color)
 {
 	// 仮でボックス用の描画を流用しているため、デバッグ時は留意
-
+#if defined(DEBUG) || defined(_DEBUG)
 	g_pTexture->SetTexture();
 
 	// シェーダーを描画パイプラインに設定
@@ -131,10 +136,15 @@ void CircleCollisionDraw(const DirectX::XMFLOAT2& center, const float& radius, c
 
 	// ポリゴン描画命令発行
 	Direct3DGetDeviceContext()->Draw(CIRCLE_NUM_VERTEX, 0);
+#endif
 }
 
+/*------------------------------------------------------------
+	ボックスコリジョン描画
+------------------------------------------------------------*/
 void BoxCollisionDraw(const DirectX::XMFLOAT2& center, const DirectX::XMFLOAT2& size, const DirectX::XMFLOAT4& color)
 {
+#if defined(DEBUG) || defined(_DEBUG)
 	g_pTexture->SetTexture();
 
 	// シェーダーを描画パイプラインに設定
@@ -189,4 +199,5 @@ void BoxCollisionDraw(const DirectX::XMFLOAT2& center, const DirectX::XMFLOAT2& 
 
 	// ポリゴン描画命令発行
 	Direct3DGetDeviceContext()->Draw(BOX_NUM_VERTEX, 0);
+#endif
 }

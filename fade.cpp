@@ -1,12 +1,11 @@
-/*＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+/*============================================================
+*	@file	 : fade.cpp
+*	@brief	 : フェード制御
 *
-*	フェード制御[fade.cpp]
-*
-* 　作成者 : Asuka Kuroda
-* 　作成日 : 2026/03/29
-* ----------------------------------------------------------------------------------------------------------
-*
-＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝*/
+* 　@Author  : @akitsuki-35（https://github.com/akitsuki-35）
+* 　@Date	 : 2026/03/29
+*	@Updated : 2026/06/02
+*============================================================*/
 #include "fade.h"
 #include "main.h"
 #include "sprite.h"
@@ -15,6 +14,9 @@
 
 #include "debug_memoryleak.h"
 
+/*------------------------------------------------------------
+	メンバ変数定義
+------------------------------------------------------------*/
 Texture* Fade::texture{ nullptr };
 Fade::State Fade::fadeState{ Fade::State::FADE_IN };
 double Fade::time{};
@@ -24,6 +26,7 @@ XMFLOAT4 Fade::color{ 0.0f, 0.0f, 0.0f, 1.0f };
 
 const void Fade::Initialize()
 {
+	// テクスチャと変数のセット
 	texture = new Texture(L"Resources/Textures/Common/white.png", { 0.0f, 0.0f },
 		{ Screen::WIDTH, Screen::HEIGHT }, 0, color);
 	fadeState = Fade::State::FADE_IN;
