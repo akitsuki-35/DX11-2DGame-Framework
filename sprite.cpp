@@ -1,26 +1,30 @@
-/*＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+/*============================================================
+*	@file	 : sprite.cpp
+*	@brief	 : スプライト描画
 *
-*	スプライト描画[sprite.cpp]
-*
-* 　Author  : Asuka Kuroda
-* 　Date	: 2026/04/01
-* ----------------------------------------------------------------------------------------------------------
-*
-＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝*/
+* 　@Author  : @akitsuki-35（https://github.com/akitsuki-35）
+* 　@Date	 : 2026/04/01
+*	@Updated : 2026/06/02
+*============================================================*/
 #include "sprite.h"
 #include "shader2d.h"
 #include "texture.h"
 #include "debug_ostream.h"
 using namespace DirectX;
 
+/*------------------------------------------------------------
+	メンバ変数定義
+------------------------------------------------------------*/
 ID3D11Buffer* Sprite::pVertexBuffer{ nullptr };
 
-// 頂点構造体
+/*------------------------------------------------------------
+	頂点構造体
+------------------------------------------------------------*/
 struct Vertex
 {
 	XMFLOAT3 position; // 頂点座標
-	XMFLOAT4 color; //色
-	XMFLOAT2 texCoord;
+	XMFLOAT4 color;	   // 色
+	XMFLOAT2 texCoord; // UV座標
 };
 
 const void Sprite::Initialize()
@@ -40,6 +44,9 @@ const void Sprite::Finalize()
 	SAFE_RELEASE(pVertexBuffer);
 }
 
+/*------------------------------------------------------------
+	テクスチャ描画
+------------------------------------------------------------*/
 const void Sprite::Draw(Texture* pTexture, const DirectX::XMFLOAT2& position, const DirectX::XMFLOAT2& size, const float& rotate, const DirectX::XMFLOAT4& color)
 {
 	pTexture->SetTexture();
@@ -69,6 +76,7 @@ const void Sprite::Draw(Texture* pTexture, const DirectX::XMFLOAT2& position, co
 		v[i].color = color;
 	}
 
+	// テクスチャ座標設定
 	v[0].texCoord = { 0.0f, 0.0f };
 	v[1].texCoord = { 1.0f, 0.0f };
 	v[2].texCoord = { 0.0f, 1.0f };
@@ -105,6 +113,9 @@ const void Sprite::Draw(Texture* pTexture, const DirectX::XMFLOAT2& position, co
 	Direct3DGetDeviceContext()->Draw(NUM_VERTEX, 0);
 }
 
+/*------------------------------------------------------------
+	スプライト描画
+------------------------------------------------------------*/
 const void Sprite::Draw(SpriteSheet* pSpriteSheet, const int& patternNum, const DirectX::XMFLOAT2& position, DirectX::XMFLOAT2 size, const float& rotate, const DirectX::XMFLOAT4& color)
 {
 	pSpriteSheet->SetTexture();
@@ -150,6 +161,7 @@ const void Sprite::Draw(SpriteSheet* pSpriteSheet, const int& patternNum, const 
 	float u1 = (offsetX + patternWidth) / texWidth;
 	float v1 = (offsetY + patternHeight) / texHeight;
 
+	// テクスチャ座標設定
 	v[0].texCoord = { u0, v0 };
 	v[1].texCoord = { u1, v0 };
 	v[2].texCoord = { u0, v1 };

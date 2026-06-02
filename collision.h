@@ -1,32 +1,31 @@
-/*＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+/*============================================================
+*	@file	 : collision.h
+*	@brief	 : 当たり判定
 *
-*	コリジョン[collision.h]
-*
-* 　Author  : Asuka Kuroda
-* 　Date	: 2026/04/29
-* ----------------------------------------------------------------------------------------------------------
-*
-＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝*/
+* 　@Author  : @akitsuki-35（https://github.com/akitsuki-35）
+* 　@Date	 : 2026/04/29
+*	@Updated : 2026/06/02
+*============================================================*/
 #ifndef COLLISION_H
 #define COLLISION_H
 
 #include <DirectXMath.h>
 
-/*＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
-	衝突防止のためnamespace使用
-	using namespaceしないこと
-＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝*/
-/*----------------------------------------------------------------------------------------------------------
-	前方宣言
-----------------------------------------------------------------------------------------------------------*/
+/*============================================================
+*	@namespace	: Collision
+*	@brief		: 衝突防止用ネームスペース
+* 
+* 　※using namespaceしないこと
+*============================================================*/
 namespace Collision {
 	class Circle;
 	class Box;
 }
 
-/*----------------------------------------------------------------------------------------------------------
-	コリジョン基底クラス
-----------------------------------------------------------------------------------------------------------*/
+/*============================================================
+*	@class	: CollisionBase
+*	@brief	: コリジョン基底クラス
+*============================================================*/
 class CollisionBase
 {
 protected:
@@ -41,34 +40,39 @@ public:
 	}
 	virtual ~CollisionBase() = default;
 
+	// 中心座標更新
 	void SetCenter(const DirectX::XMFLOAT2& offset) {
 		center = { offset.x + collisionSize.x / 2, offset.y + collisionSize.y / 2 };
 	}
 
+	// サイズ更新
 	void SetSize(const DirectX::XMFLOAT2& size) {
 		collisionSize = size;
 		SetCenter(position);
 	}
 
-	virtual bool IsOverlap(const Collision::Circle*) const { return false; }
-	virtual bool IsOverlap(const Collision::Box*) const { return false; }
-	virtual bool IsOverlap(const DirectX::XMFLOAT2&) const { return false; }
-
+	// コリジョン移動
 	virtual void Move(const DirectX::XMFLOAT2& currentPos) {
 		DirectX::XMFLOAT2 newPos = currentPos;
 		SetCenter(newPos);
 	}
+
+	// 中心座標取得
 	virtual const DirectX::XMFLOAT2& GetCenter() const { return center; }
 
+	// 各種コリジョンとの当たり判定（継承先で処理）
+	virtual bool IsOverlap(const Collision::Circle*) const { return false; }
+	virtual bool IsOverlap(const Collision::Box*) const { return false; }
+	virtual bool IsOverlap(const DirectX::XMFLOAT2&) const { return false; }
+
+	// 描画（デバッグ用）
 	virtual void Draw() const {}
 };
 
-/*＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
-	コリジョン
-＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝*/
-/*----------------------------------------------------------------------------------------------------------
-	サークルコリジョン
-----------------------------------------------------------------------------------------------------------*/
+/*============================================================
+*	@class	: Circle
+*	@brief	: サークルコリジョン
+*============================================================*/
 class Collision::Circle : public CollisionBase
 {
 	friend Box;
@@ -87,22 +91,24 @@ public:
 		}
 	}
 
+	// 各種コリジョンとの当たり判定
 	bool IsOverlap(const Circle* target) const override;
 	bool IsOverlap(const Box* target) const override;
-
-	// カーソル用
 	virtual bool IsOverlap(const DirectX::XMFLOAT2& target) const override;
 
+	// コリジョン移動
 	virtual void Move(const DirectX::XMFLOAT2& currentPos) override {
 		SetCenter(currentPos);
 	}
 
+	// 描画（デバッグ用）
 	void Draw() const override;
 };
 
-/*----------------------------------------------------------------------------------------------------------
-	ボックスコリジョン
-----------------------------------------------------------------------------------------------------------*/
+/*============================================================
+*	@class	: Box
+*	@brief	: ボックスコリジョン
+*============================================================*/
 class Collision::Box : public CollisionBase
 {
 	friend Circle;
@@ -118,12 +124,12 @@ public:
 		max = { center.x + (collisionSize.x / 2), center.y + (collisionSize.y / 2) };
 	}
 
+	// 各種コリジョンとの当たり判定
 	bool IsOverlap(const Circle* target) const override;
 	bool IsOverlap(const Box* target) const override;
-
-	// カーソル用
 	virtual bool IsOverlap(const DirectX::XMFLOAT2& target) const override;
 
+	// コリジョン移動
 	void Move(const DirectX::XMFLOAT2& currentPos) override {
 		float x = position.x - currentPos.x;
 		float y = position.y - currentPos.y;
@@ -139,6 +145,7 @@ public:
 		max = { center.x + (collisionSize.x / 2), center.y + (collisionSize.y / 2) };
 	}
 
+	// 描画（デバッグ用）
 	void Draw() const override;
 };
 

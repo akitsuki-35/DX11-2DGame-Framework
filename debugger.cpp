@@ -1,12 +1,12 @@
-/*＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+/*============================================================
+*	@file	 : debugger.cpp
+*	@brief	 : ImGuiデバッガー
 *
-*	ImGuiデバッガー[debugger.cpp]
-*
-* 　Author  : Asuka Kuroda
-* 　Date	: 2026/05/21
-* ----------------------------------------------------------------------------------------------------------
-*
-＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝*/
+* 　@Author  : @akitsuki-35（https://github.com/akitsuki-35）
+* 　@Date	 : 2026/05/21
+*	@Updated : 2026/06/02
+*============================================================*/
+#if defined(DEBUG) || defined(_DEBUG)
 #include "debugger.h"
 #include "direct3d.h"
 
@@ -18,6 +18,24 @@
 // デバッグ対象のインクルード
 #include "cursor.h"
 
+/*============================================================
+	使い方
+
+	ヘッダ側にデバッグウィンドウ関数の宣言を記述し、cpp側で定義
+	Initialize, Finalize, Drawの内部とUpdateのImGui::NewFrame();より上の行の変更厳禁
+
+	デバッグ関数は以下の書式で記述する
+	必ずBeginとEndで挟むこと（飛びます）
+
+	const void Debugger::[関数名]()
+	{
+		ImGui::Begin("Cursor");
+
+		// 処理内容
+
+		ImGui::End();
+	}
+============================================================*/
 const void Debugger::Initialize(HWND hwnd) const
 {
 	// バージョンチェック
@@ -52,8 +70,7 @@ const void Debugger::Update(double elapsedTime) const
 	// ===== デバッグウィンドウの追加処理 =====
 
 	GetInstance().CursorDebug();
-
-	ImGui::End();
+	GetInstance().CursorColorDebug();
 }
 
 const void Debugger::Draw() const
@@ -69,7 +86,12 @@ const void Debugger::CursorDebug()
 	ImGui::Text("posY: %f", Cursor::GetInstance().GetPosition().y);
 	ImGui::Text("LeftPresed: %s", Cursor::GetInstance().IsLeftButtonPressed() ? "true" : "false");
 	ImGui::Text("RightPresed: %s", Cursor::GetInstance().IsRightButtonPressed() ? "true" : "false");
+	ImGui::End();
+}
 
+const void Debugger::CursorColorDebug()
+{
+	ImGui::Begin("CursorColor");
 	ImGui::Text(
 		"Color : %.2f %.2f %.2f %.2f",
 		Cursor::GetInstance().GetColor().x,
@@ -77,4 +99,7 @@ const void Debugger::CursorDebug()
 		Cursor::GetInstance().GetColor().z,
 		Cursor::GetInstance().GetColor().w
 	);
+	ImGui::End();
 }
+
+#endif // defined(DEBUG) || defined(_DEBUG)

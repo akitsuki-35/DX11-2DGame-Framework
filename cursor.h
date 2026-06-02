@@ -1,12 +1,11 @@
-/*＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+/*============================================================
+*	@file	 : cursor.h
+*	@brief	 : マウスカーソル
 *
-*	マウスカーソル[cursor.h]
-*
-* 　Author  : Asuka Kuroda
-* 　Date	: 2026/05/20
-* ----------------------------------------------------------------------------------------------------------
-*
-＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝*/
+* 　@Author  : @akitsuki-35（https://github.com/akitsuki-35）
+* 　@Date	 : 2026/05/20
+*	@Updated : 2026/06/02
+*============================================================*/
 #ifndef CURSOR_H
 #define CURSOR_H
 
@@ -26,12 +25,18 @@ enum Mode
 	COLOR
 };
 
+/*------------------------------------------------------------
+	マウスボタンの状態
+------------------------------------------------------------*/
 struct MouseButtonState
 {
 	bool leftButton{};
 	bool rightButton{};
 };
 
+/*------------------------------------------------------------
+	カーソルの状態
+------------------------------------------------------------*/
 struct CursorState
 {
 	Mode mode;
@@ -40,8 +45,16 @@ struct CursorState
 	MouseButtonState last;
 };
 
+/*------------------------------------------------------------
+	前方宣言
+------------------------------------------------------------*/
 class Texture;
 
+/*============================================================
+*	@class	: Cursor
+*	@brief	: マウスカーソルオブジェクト
+*			  シングルトンで作成
+*============================================================*/
 class Cursor : public Subject
 {
 private:
@@ -67,18 +80,30 @@ public:
 	// あとで使うので消さないで！！！！！
 	// const void Draw();
 
+/*------------------------------------------------------------
+	ゲッター
+------------------------------------------------------------*/
 	const DirectX::XMFLOAT2& GetPosition() { return position; }
 	const DirectX::XMFLOAT4& GetColor() { return cursorState.color; }
+
+/*------------------------------------------------------------
+	セッター
+------------------------------------------------------------*/
 	void SetColor(const DirectX::XMFLOAT4& color);
 
+/*------------------------------------------------------------
+	左ボタン状態取得
+------------------------------------------------------------*/
+	bool IsLeftButtonPressed();
+	bool IsLeftButtonTrigger();
+	bool IsLeftButtonUp();
 
-	const bool& IsLeftButtonPressed();
-	const bool& IsLeftButtonTrigger();
-	const bool& IsLeftButtonUp();
-
-	const bool& IsRightButtonPressed();
-	const bool& IsRightButtonTrigger();
-	const bool& IsRightButtonUp();
+/*------------------------------------------------------------
+	右ボタン状態取得
+------------------------------------------------------------*/
+	bool IsRightButtonPressed();
+	bool IsRightButtonTrigger();
+	bool IsRightButtonUp();
 };
 
 #endif // CURSOR_H
