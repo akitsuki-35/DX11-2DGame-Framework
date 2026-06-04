@@ -147,7 +147,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 
 	Fade::GetInstance().Initialize();
 	Fade::GetInstance().Start(0.0f, false);
-	Manager::Initialize();
+	Manager::GetInstance().Initialize();
 
 	// 時間計測
 	double fps = 0.0;
@@ -193,12 +193,12 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 
 				KeyLogger::Update();
 
-				Manager::Update(elapsedTime);
+				Manager::GetInstance().Update(elapsedTime);
 				Fade::GetInstance().Update(elapsedTime);
 
 				Direct3DClear();
 
-				Manager::Draw();
+				Manager::GetInstance().Draw();
 				Fade::GetInstance().Draw();
 
 		#if defined(DEBUG) || defined(_DEBUG)
@@ -219,7 +219,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 				frameCount++;
 				
 				// シーン遷移を判定
-				Manager::Transition();
+				Manager::GetInstance().Transition();
 			}
 		}
 
@@ -228,7 +228,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hprevinstanc
 /*------------------------------------------------------------
 	終了処理
 ------------------------------------------------------------*/
-	Manager::Finalize();
+	Manager::GetInstance().Finalize();
 	Fade::GetInstance().Finalize();
 
 #if defined(DEBUG) || defined(_DEBUG)

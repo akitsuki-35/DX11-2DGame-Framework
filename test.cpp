@@ -18,7 +18,7 @@ void Test::Finalize()
 {
 }
 
-void Test::Update(double elapsed_time)
+void Test::Update(double elapsedTime)
 {
 }
 
