@@ -1,11 +1,12 @@
-/*============================================================
-*	@file	 : title.cpp
-*	@brief	 : タイトルシーン
+/*＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 *
-* 　@Author  : @akitsuki-35（https://github.com/akitsuki-35）
-* 　@Date	 : 2026/03/29
-*	@Updated : 2026/06/02
-*============================================================*/
+*	タイトルシーン[title.cpp]
+*
+* 　作成者 : @akitsuki-35（https://github.com/akitsuki-35）
+* 　作成日 : 2026/03/29
+* ----------------------------------------------------------------------------------------------------------
+*
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝*/
 #include "title.h"
 #include "manager.h"
 #include "keylogger.h"
@@ -25,9 +26,9 @@ void Title::Finalize()
 {
 }
 
-void Title::Update(double elapsed_time)
+void Title::Update(double elapsedTime)
 {
-	accumulatedTime += elapsed_time;
+	accumulatedTime += elapsedTime;
 
 	switch (state)
 	{
@@ -57,7 +58,7 @@ void Title::Update(double elapsed_time)
 	case TITLE_FADE_OUT:
 		if (Fade::GetInstance().GetState() == Fade::FADE_OUT_END) {
 			// ゲームシーンに遷移
-			Manager::SetNextScene(new Game);
+			Manager::GetInstance().SetNextScene(new Game);
 		}
 		break;
 

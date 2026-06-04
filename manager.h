@@ -1,46 +1,53 @@
-/*============================================================
-*	@file	 : manager.h
-*	@brief	 : シーンマネージャー
+/*＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 *
-* 　@Author  : @akitsuki-35（https://github.com/akitsuki-35）
-* 　@Date	 : 2026/04/29
-*	@Updated : 2026/06/02
-*============================================================*/
+*	シーン制御[manager.h]
+*
+* 　Author  : @akitsuki-35（https://github.com/akitsuki-35）
+* 　Date	: 2026/04/29
+* ----------------------------------------------------------------------------------------------------------
+*
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝*/
 #ifndef MANAGER_H
 #define MANAGER_H
 
 #include "scene.h"
 
-/*------------------------------------------------------------
+/*----------------------------------------------------------------------------------------------------------
 	シーンのインクルード
-------------------------------------------------------------*/
+----------------------------------------------------------------------------------------------------------*/
 #include "title.h"
 #include "game.h"
 
 #include "test.h"
 
-/*============================================================
-*	@class	: Manager
-*	@brief	: シーン処理の管理
-*============================================================*/
+/*----------------------------------------------------------------------------------------------------------
+	マネージャークラス
+----------------------------------------------------------------------------------------------------------*/
 class Manager
 {
 private:
-	static Scene* currentScene; // 現在のシーン
-	static Scene* nextScene; // 次のシーン
+	static Scene* currentScene;
+	static Scene* nextScene;
 
 public:
-	static void Initialize();
-	static void Finalize();
-	static void Update(double elapsed_time);
-	static void Draw();
+	Manager() {}
+	Manager(const Manager&) {}
+	Manager& operator=(const Manager&);
+	~Manager() {};
 
-	// ゲッター・セッター
-	static const Scene* GetScene();
-	static void SetNextScene(Scene* next);
+	static Manager& GetInstance() {
+		static Manager instance;
+		return instance;
+	}
 
-	// シーン遷移
-	static void Transition();
+	const void Initialize();
+	const void Finalize();
+	const void Update(double elapsed_time);
+	const void Draw();
+
+	const Scene* GetScene();
+	const void SetNextScene(Scene* next);
+	const void Transition();
 };
 
 #endif // MANAGER_H

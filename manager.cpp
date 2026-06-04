@@ -1,42 +1,45 @@
-/*============================================================
-*	@file	 : manager.cpp
-*	@brief	 : シーンマネージャー
+/*＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 *
-* 　@Author  : @akitsuki-35（https://github.com/akitsuki-35）
-* 　@Date	 : 2026/04/29
-*	@Updated : 2026/06/02
-*============================================================*/
+*	[manager.cpp]
+*
+* 　Author  : @akitsuki-35（https://github.com/akitsuki-35）
+* 　Date	: 2026/04/29
+* ----------------------------------------------------------------------------------------------------------
+*
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝*/
 #include "manager.h"
 
 #include "debug_memoryleak.h"
 
-/*------------------------------------------------------------
-	メンバ変数定義
-------------------------------------------------------------*/
 Scene* Manager::currentScene{ nullptr };
 Scene* Manager::nextScene{ nullptr };
 
-void Manager::Initialize()
+const void Manager::Initialize()
 {
-	currentScene = nextScene = new Test; // 初期シーンのセット
+	currentScene = nextScene = new Title; // 初期シーンのセット
 	currentScene->Initialize();
 }
 
-void Manager::Finalize()
+const void Manager::Finalize()
 {
 	// シーンの終了
 	currentScene->Finalize();
 
-	if (currentScene != nextScene) delete nextScene;
-	delete currentScene;
+	if (nextScene) {
+		if (currentScene) {
+			delete currentScene;
+		}
+		currentScene = nextScene;
+		nextScene = nullptr;
+	}
 }
 
-void Manager::Update(double elapsed_time)
+const void Manager::Update(double elapsed_time)
 {
 	currentScene->Update(elapsed_time);
 }
 
-void Manager::Draw()
+const void Manager::Draw()
 {
 	currentScene->Draw();
 }
@@ -46,22 +49,23 @@ const Scene* Manager::GetScene()
 	return currentScene;
 }
 
-void Manager::SetNextScene(Scene* next)
+const void Manager::SetNextScene(Scene* next)
 {
 	nextScene = next;
 }
 
-void Manager::Transition()
+const void Manager::Transition()
 {
 	if (currentScene != nextScene)
 	{
 		// 現在シーンの終了処理
-		Finalize();
+		currentScene->Finalize();
 
 		// シーンを次のシーンへ遷移
+		delete currentScene;
 		currentScene = nextScene;
 
 		//遷移先のシーンを初期化
-		Initialize();
+		currentScene->Initialize();
 	}
 }

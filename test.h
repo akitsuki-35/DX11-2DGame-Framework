@@ -29,7 +29,7 @@ private:
 public:
 	void Initialize() override;
 	void Finalize() override;
-	void Update(double elapsed_time) override;
+	void Update(double elapsedTime) override;
 	void Draw() const override;
 };
 
