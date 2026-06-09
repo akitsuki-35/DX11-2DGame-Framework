@@ -2,9 +2,9 @@
 *	@file	 : main.h
 *	@brief	 : メイン
 *
-* 　@Author  : @akitsuki-35（https://github.com/akitsuki-35）
-* 　@Date	 : 2026/04/12
-*	@Updated : 2026/06/02
+* 　@author  : @akitsuki-35（https://github.com/akitsuki-35）
+* 　@date	 : 2026/04/12
+*	@updated : 2026/06/02
 *============================================================*/
 #ifndef MAIN_H
 #define MAIN_H

@@ -29,6 +29,7 @@
     <ClCompile Include="direct3d.cpp" />
     <ClCompile Include="easing.cpp" />
     <ClCompile Include="fade.cpp" />
+    <ClCompile Include="fontrenderer.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="include\ImGui\imgui.cpp" />
     <ClCompile Include="include\ImGui\imgui_demo.cpp" />
@@ -63,6 +64,7 @@
     <ClInclude Include="direct3d.h" />
     <ClInclude Include="easing.h" />
     <ClInclude Include="fade.h" />
+    <ClInclude Include="fontrenderer.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="gameobject.h" />
     <ClInclude Include="include\ImGui\imconfig.h" />
