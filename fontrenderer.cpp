@@ -8,8 +8,22 @@
 *============================================================*/
 #include "fontrenderer.h"
 #include "direct3d.h"
+#include <Windows.h>
 
-const void FontRenderer::Initialize()
+/*------------------------------------------------------------
+	メンバ変数定義
+------------------------------------------------------------*/
+FontData* FontRenderer::pFont;
+
+ID2D1Factory* FontRenderer::pFactory;
+IDWriteFactory* FontRenderer::pDwriteFactory;
+IDWriteTextFormat* FontRenderer::pFormat;
+IDWriteTextLayout* FontRenderer::pLayout;
+ID2D1RenderTarget* FontRenderer::pRenderTarget;
+ID2D1SolidColorBrush* FontRenderer::pBrush;
+IDXGISurface* FontRenderer::pBackBuffer;
+
+const void FontRenderer::Initialize(HWND hWnd)
 {
 	// DirectWrite初期化
 	D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &pFactory);
@@ -19,7 +33,7 @@ const void FontRenderer::Initialize()
 
 	// 解像度設定
 	float dpiX, dpiY;
-	pFactory->GetDesktopDpi(&dpiX, &dpiY);
+	dpiX = dpiY = static_cast<float>(GetDpiForWindow(hWnd));
 
 	// レンダーターゲット作成
 	D2D1_RENDER_TARGET_PROPERTIES rt =
@@ -35,8 +49,6 @@ const void FontRenderer::Initialize()
 	// ファクトリー作成
 	DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), 
 		reinterpret_cast<IUnknown**>(&pDwriteFactory));
-
-
 }
 
 const void FontRenderer::Finalize()

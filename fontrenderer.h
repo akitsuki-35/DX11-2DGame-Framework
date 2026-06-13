@@ -60,8 +60,9 @@ public:
 		return instance;
 	}
 
-	const void Initialize();
+	const void Initialize(HWND hWnd);
 	const void Finalize();
+	void Draw() const;
 
 };
 
